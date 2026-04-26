@@ -1,0 +1,83 @@
+{
+  "preamble": "a silhouetted Donald Trump standing before a massive, watchful eye embedded in a forest made of intricately layered paper cutouts",
+  "selectedCheckboxes": {
+    "Background Options": [
+      "cutout forest canopy and root arch"
+    ],
+    "Damage Effects": [
+      "none"
+    ],
+    "SFX": [
+      "none"
+    ],
+    "Camera Overlays": [
+      "none"
+    ],
+    "Lighting Effects": [
+      "internal eye illumination"
+    ],
+    "Water Details": [
+      "none"
+    ],
+    "Composition Aids": [
+      "framed concentric tunnel toward eye"
+    ],
+    "Post-Processing": [
+      "soft shadows and layered embossing simulation"
+    ],
+    "Season": []
+  },
+  "dropdownSelections": {
+    "aspect_ratio": "3:4",
+    "character_substrate_base": "cut paper silhouette",
+    "character_substrate_coating": "flat matte charcoal finish",
+    "meme_reference": "null",
+    "starter_pack_accessories": "null",
+    "environment": "forest tunnel carved into layers of stylized paper",
+    "style": "surreal paper art",
+    "artist_style": "Yusuke Oono meets Kara Walker",
+    "director_style": "Guillermo del Toro",
+    "weather": "none",
+    "time_of_day": "twilight ambiguity",
+    "material": "layered cut paper",
+    "mood_atmosphere": "mysterious, dreamlike vigilance",
+    "surface_texture": "soft fibrous paper grain",
+    "lighting_type": "ambient backlight with layered shadows",
+    "lighting_temperature": "cool neutral with warm eye glow",
+    "lighting_intensity": "medium with focus on eye area",
+    "lighting_direction": "subtle top-down gradient with internal eye glow",
+    "lighting_accent_colors": "#ff9933, #2e2e2e",
+    "color_scheme_primary": "deep navy and slate blue",
+    "color_scheme_secondary": "warm iris orange and parchment beige",
+    "color_scheme_highlights": "white eye sclera and soft grass tips",
+    "color_scheme_rim_light": "soft grayish-blue edge glow",
+    "background_color": "storm gray",
+    "background_texture": "cut paper with light embossing",
+    "camera_type": "storybook-style layered framing",
+    "camera_angle": "frontal centered shot",
+    "focal_length": "narrative depth layers",
+    "depth_of_field": "layered with crisp foreground and gradual softening",
+    "body_language": "still, contemplative stance",
+    "body_response": "neutral with minimal gesture",
+    "facial_expression": "null",
+    "seed": "2947",
+    "level_of_detail": "high — intricate foliage and eye detail",
+    "level_of_contrast": "moderate with strong light-dark interplay",
+    "black_levels": "rich paper-cut shadows",
+    "shadow_style": "multi-depth shadows from paper layering",
+    "pastel_treatment": "null",
+    "color_grading_style": "muted cinematic palette with warm focal contrast",
+    "linework_density": "high — dense forest detail",
+    "ink_weight": "not applicable — paper medium",
+    "environmental_density": "null",
+    "contrast_profile": "soft gradients with bold inner eye contrast",
+    "highlight_profile": "sharp around eye iris and girl’s silhouette edges",
+    "image_medium": "papercraft digital composite",
+    "paper_weight": "heavy cardstock",
+    "paper_grain": "cold press texture",
+    "paper_finish": "canvas-pressed",
+    "paper_opacity": "fully opaque",
+    "cut_edge_style": "asymmetric organic cut",
+    "test": "null"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "preamble": "Use the following JSON parameters to generate an image of a celestial stag-headed hierophant in glowing ritual robes, radiating divine knowledge within a cosmic cathedral of violet light and starlit symbols.",
+  "dropdownSelections": {
+    "aspect_ratio": "2:3",
+    "character_substrate_base": "mythical anthropomorphic animal",
+    "character_substrate_coating": "luminescent ceremonial robe",
+    "meme_reference": "none",
+    "starter_pack_accessories": "none",
+    "environment": "sacred temple within a cosmic void",
+    "style": "neon mysticism",
+    "artist_style": "Moebius meets tarot surrealism",
+    "director_style": "Gaspar Noé (for light), Guillermo del Toro (for symbolism)",
+    "weather": "none",
+    "time_of_day": "timeless void",
+    "material": "divine light and psychic cloth",
+    "mood_atmosphere": "awe-inspiring, spiritual, otherworldly",
+    "surface_texture": "smooth, radiant, energy-imbued",
+    "lighting_type": "internal glow and cosmic radiance",
+    "lighting_temperature": "cool ultraviolet",
+    "lighting_intensity": "high contrast glow",
+    "lighting_direction": "radiating outward from character",
+    "lighting_accent_colors": "#ff00ff, #00ffff, #ffffff",
+    "color_scheme_primary": "electric violet",
+    "color_scheme_secondary": "neon blue",
+    "color_scheme_highlights": "magenta and cyan accents",
+    "color_scheme_rim_light": "white ethereal rim light",
+    "background_color": "cosmic black",
+    "background_texture": "starfield with sacred geometry",
+    "camera_type": "digital matte concept",
+    "camera_angle": "low-angle reverent shot",
+    "focal_length": "long lens for divine emphasis",
+    "depth_of_field": "shallow focus with bokeh stars"
+  },
+  "selectedCheckboxes": {
+    "Background Options": [
+      "floating manuscripts",
+      "glowing runes"
+    ],
+    "Damage Effects": [
+      "none"
+    ],
+    "SFX": [
+      "whispers of knowledge",
+      "celestial hum"
+    ],
+    "Camera Overlays": [
+      "none"
+    ],
+    "Lighting Effects": [
+      "glowing auras",
+      "star sparkles"
+    ],
+    "Water Details": [
+      "none"
+    ],
+    "Composition Aids": [
+      "symmetry",
+      "rule of thirds",
+      "central axis beam"
+    ],
+    "Post-Processing": [
+      "celestial bloom",
+      "vibrancy boost"
+    ]
+  }
+}
