@@ -1,0 +1,76 @@
+{
+  "preamble": "a highly detailed ink illustration of a dog wearing hypnotic spiral sunglasses against a turquoise psychedelic background",
+  "selectedCheckboxes": {
+    "Background Options": [
+      "trippy contour-line field"
+    ],
+    "Damage Effects": [
+      "none"
+    ],
+    "SFX": [
+      "none"
+    ],
+    "Camera Overlays": [
+      "none"
+    ],
+    "Lighting Effects": [
+      "none"
+    ],
+    "Water Details": [
+      "none"
+    ],
+    "Composition Aids": [
+      "central alignment with swirl repetition"
+    ],
+    "Post-Processing": [
+      "edge sharpening and monochrome texture polish"
+    ],
+    "Season": []
+  },
+  "dropdownSelections": {
+    "aspect_ratio": "9:16",
+    "character_substrate_base": "scratchboard-style ink etching",
+    "character_substrate_coating": "monochrome shading with spiral accent color",
+    "meme_reference": "null",
+    "starter_pack_accessories": "null",
+    "environment": "flat illustrative backdrop with psychedelic swirl patterns",
+    "style": "surreal ink illustration",
+    "artist_style": "Shepard Fairey meets Ralph Steadman",
+    "director_style": "Terry Gilliam",
+    "weather": "null",
+    "time_of_day": "null",
+    "material": "digital ink engraving",
+    "mood_atmosphere": "trippy, confident, stoic humor",
+    "surface_texture": "crosshatched linework with paper grain simulation",
+    "lighting_type": "flat studio light with no dramatic shadows",
+    "lighting_temperature": "neutral cool",
+    "lighting_intensity": "low contrast ambient",
+    "lighting_direction": "even frontal light",
+    "lighting_accent_colors": "#00bfc7, #ffffff, #000000",
+    "color_scheme_primary": "aqua and bone",
+    "color_scheme_secondary": "black and slate gray",
+    "color_scheme_highlights": "turquoise spiral lenses",
+    "color_scheme_rim_light": "null",
+    "background_color": "cyan-turquoise blend",
+    "background_texture": "hand-drawn spiral topographic lines",
+    "camera_type": "illustrative portrait framing",
+    "camera_angle": "low frontal close-up",
+    "focal_length": "short telephoto (portrait-style)",
+    "depth_of_field": "flattened with equal focus throughout",
+    "body_language": "stoic, upright",
+    "body_response": "still, composed",
+    "facial_expression": "coolly detached",
+    "seed": "4026",
+    "level_of_detail": "extreme — fur strands, reflections, texture lines",
+    "level_of_contrast": "medium — ink emphasis without deep shadows",
+    "black_levels": "bold but not overbearing outlines",
+    "shadow_style": "minimal hatching only",
+    "pastel_treatment": "none",
+    "color_grading_style": "pop art monochrome with cyan punch",
+    "linework_density": "very dense — fine overlapping strokes",
+    "ink_weight": "medium-bold strokes with varied thickness",
+    "environmental_density": "minimal with full focus on subject",
+    "contrast_profile": "balanced with ink-forward emphasis",
+    "highlight_profile": "spiral lens glow with mild paper reflections"
+  }
+}

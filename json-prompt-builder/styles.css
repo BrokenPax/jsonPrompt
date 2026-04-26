@@ -1,0 +1,1071 @@
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  padding-left: 20px;
+  padding-right: 20px;    
+  flex-direction: column;
+    
+  /* ⬇️ Sleek dev grid aesthetic */
+  background-image: 
+    linear-gradient(#222 1px, transparent 1px), 
+    linear-gradient(90deg, #222 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.top-menu-bar {
+  background-color: #2a2a2a;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  flex-shrink: 0;
+}
+
+.menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 20px;
+}
+
+.menu-item {
+  position: relative;
+  padding: 10px 15px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.menu-item span {
+  color: #fff;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  list-style: none;
+  padding: 5px 0;
+  margin: 0;
+  width: auto;
+  min-width: max-content;
+  max-width: 100vw; /* prevents overflow off screen */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.has-submenu {
+  position: relative;
+}
+
+.nested-submenu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  display: none;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  list-style: none;
+  padding: 5px 0;
+  margin: 0;
+  width: auto;
+  min-width: max-content;
+  max-width: 100vw;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+}
+
+.has-submenu:hover > .nested-submenu {
+  display: block;
+}
+
+.nested-submenu {
+  display: none;
+}
+
+.menu > .menu-item:hover > .submenu {
+  display: block;
+}
+
+.submenu li {
+  padding: 8px 16px;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.submenu li:hover {
+  background-color: #00ffff22;
+  color: #00ffff;
+  box-shadow: 0 0 6px #00ffff88 inset;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.submenu hr {
+  border: 0;
+  height: 1px;
+  background: #555;
+  margin: 4px 0;
+}
+
+textarea, select, input[type="text"] {
+  width: 100%;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border: 1px solid #555;
+  padding: 6px;
+  font-size: 1rem;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #00ffff;
+  outline: none;
+  box-shadow: 0 0 4px #00ffff66;
+}
+
+#preamble {
+  width: 100%;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border: 1px solid #555;
+  padding: 10px 16px 10px 10px; /* ✅ right padding increased */
+  margin-bottom: 20px; /* ✅ creates vertical space between textarea and dropdowns */    
+  font-size: 1rem;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  box-sizing: border-box;
+  height: 150px; /* or taller */
+  resize: vertical;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: -5px;
+  font-size: 0.85rem;
+}
+
+.field-row label {
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+  font-weight: bold;
+  padding: 2px 4px;
+  line-height: 1;
+}
+
+.field-row select,
+.field-row input {
+  flex: 2;
+  padding: 4px 6px;
+  font-size: 0.85rem;
+  height: 30px; /* balanced height */
+  line-height: 1;
+}
+
+.field-row button {
+  font-size: 0.65rem;
+  height: 20px;
+  padding: 2px 6px;
+  line-height: 1;
+}
+
+.controls,
+.button-bar {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+button {
+  background-color: #262626;
+  color: #00ffff;
+  border: 1px solid #00ffff88;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  background-color: #00ffff22;
+  transform: scale(1.03);
+  box-shadow: 0 0 6px #00ffff44;
+}
+
+.main-scrollable {
+  overflow-y: auto;
+  max-height: calc(100vh - 300px); /* gives room for textarea and buttons */
+  padding-right: 12px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* 🌀 Universal Custom Scrollbars – All scrollable areas */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #00ffff88;
+  border-radius: 4px;
+  border: 1px solid #00ffff44;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #00ffffcc;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1c1c1c;
+  border: 2px solid #00ffff55;
+  box-shadow: 0 0 20px rgba(0,255,255,0.2);
+  color: #ffffff;
+  padding: 20px 30px;
+  z-index: 1002;
+  max-height: 80vh;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  text-align: left;
+  border-radius: 10px;
+  width: auto;
+  max-width: none;
+}
+
+.modal.show {
+  display: block;
+}
+
+.modal h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.25em;
+}
+
+.modal label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  margin: 4px 0;
+  padding: 4px 8px;
+  width: 100%;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.modal label span {
+  white-space: nowrap;
+  text-align: left;
+  flex: 1;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+ul#edit-list,
+ul#dropdown-edit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+ul#edit-list li,
+ul#dropdown-edit-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+ul#edit-list input,
+ul#dropdown-edit-list input {
+  flex: 1;
+  padding: 6px;
+  background: #2a2a2a;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 4px;
+}
+
+ul#edit-list button,
+ul#dropdown-edit-list button {
+  padding: 6px 10px;
+  background: #a00;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+ul#edit-list button:hover,
+ul#dropdown-edit-list button:hover {
+  background: #c00;
+}
+
+#jsonMenu li {
+  padding: 12px 14px;
+  cursor: pointer;
+}
+
+.subdialog-scroll {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding-right: 6px;
+}
+
+#importJsonModal.modal {
+  width: 70%;
+  max-width: 700px;
+  height: 80%;
+  max-height: 700px;
+  overflow-y: auto;
+  padding: 30px;
+  font-size: 16px;
+}
+
+#importJsonModal textarea,
+#importJsonModal input[type="text"] {
+  width: 100%;
+  font-size: 14px;
+}
+
+#importJsonModal .summary-box {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  padding: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+#manageFolderList,
+#manageProfileResults {
+  flex: 1;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+#manageFolderList li,
+#manageProfileResults li {
+  padding: 8px 12px;
+  cursor: pointer;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #333;
+  font-family: 'JetBrains Mono', monospace;
+  transition: background-color 0.2s ease;
+}
+
+#manageFolderList li:hover,
+#manageProfileResults li:hover {
+  background-color: #222;
+}
+
+#manageFolderList li.selected,
+#manageProfileResults li.selected {
+  background-color: #007777; /* same as Load modal selected */
+  color: #fff;
+  font-weight: bold;
+}
+
+#manageProfileModal {
+  width: 90vw;
+  max-width: 900px;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category-header {
+  color: #66ccff;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.menu-item,
+.submenu li,
+.field-row label,
+.checkbox-group label,
+.profile-row span {
+  white-space: nowrap !important;
+  padding: 8px 16px !important;
+  width: auto !important;
+  min-width: fit-content !important;
+  max-width: none !important;
+}
+
+#manageProfilesModal {
+  display: none;
+  width: 90vw;
+  max-width: 1000px;
+  height: 80vh;
+  max-height: 700px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
+  background-color: #1e1e1e;
+  border: 1px solid #00ffff33;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Optional: Title Styling */
+#manageProfilesModal h3 {
+  font-size: 1.5rem;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+/* Pane styling */
+#profileTree {
+  flex: 1 1 auto;
+  min-height: 0;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 20px;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: pre;
+  box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.05);
+}
+
+/* Tree folder styles */
+.profile-tree .folder {
+  font-weight: bold;
+  margin-top: 8px;
+  color: #00ffff;
+}
+
+/* Tree profile entries */
+.profile-tree .profile {
+  margin-left: 20px;
+  cursor: pointer;
+  color: #ffffff;
+  padding: 4px 0;
+  transition: background-color 0.2s ease;
+}
+
+.profile-tree .profile:hover {
+  background-color: #00ffff22;
+  text-decoration: none;
+}
+
+/* Dialog button bar */
+#manageProfilesModal .dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* 🔧 Force Manage Profiles modal to flex when shown */
+#manageProfilesModal.show {
+  display: flex !important;
+  flex-direction: column;
+}
+
+.modal.manage-profiles {
+  width: 90vw;
+  max-width: 1000px;
+  height: 80vh;
+  max-height: 700px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0,255,255,0.2);
+  background-color: #1e1e1e;
+  border: 2px solid #00ffff55;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+#importJsonModal .button-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+#importJsonModal textarea {
+  margin-top: 12px;
+  margin-bottom: 16px;
+  padding: 10px 0px 10px 10px; /* top, right, bottom, left */
+}
+
+.reorder-list {
+  list-style: none;
+  padding: 0;
+  padding-right: 8px;
+}
+
+.reorder-list li.dragging {
+  opacity: 1;
+  background-color: #1a1a1a;
+  border: 2px solid #00f0ff;
+  box-shadow: 0 0 12px #00f0ff, 0 0 24px #00f0ff inset;
+}
+
+.reorder-list li.drag-target {
+  outline: 2px solid #ffaa00;
+  outline-offset: -2px;
+  background-color: #333;
+}
+.reorder-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  margin-bottom: 4px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  cursor: grab;
+  user-select: none;
+}
+
+.reorder-list .drag-handle {
+  font-family: monospace;
+  font-size: 18px;
+  color: #aaa;
+  cursor: grab;
+  padding-right: 8px;
+}
+
+.reorder-list .label-text {
+  flex-grow: 1;
+  color: #f0f0f0;
+}
+.reorder-list .insertion-line {
+  height: 2px;
+  background: #00f0ff;
+  margin: -1px 0 4px 0;
+  box-shadow: 0 0 6px #00f0ff;
+  border-radius: 1px;
+}
+/* 👇 This controls the outer scrollable area */
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* tighter vertical spacing */
+  padding: 4px 2px;
+  margin: 0;
+}
+
+/* 👇 This controls each checkbox label-row */
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  font-size: 0.95rem;
+  background-color: #2a2a2a;
+  border-radius: 4px;
+}
+
+/* 👇 Optional: refine input appearance */
+.checkbox-item input[type="checkbox"] {
+  transform: scale(1.1);
+}
+
+#mainFields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0px 10px; /* top/bottom spacing between textarea + buttons */
+}
+
+body.light-mode {
+  background-color: #ffffff;
+  color: #000000;
+  background-image: none; /* turn off the dev grid */
+}
+
+body.light-mode textarea,
+body.light-mode select,
+body.light-mode input[type="text"] {
+  background-color: #f5f5f5;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+body.light-mode .top-menu-bar {
+  background-color: #e0e0e0;
+}
+
+body.light-mode button {
+  background-color: #f0f0f0;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+body.light-mode button:hover {
+  background-color: #ddd;
+  box-shadow: 0 0 6px #ccc;
+}
+
+body.light-mode .modal {
+  background: #ffffff;
+  color: #000;
+  border: 2px solid #aaa;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .submenu li:hover {
+  background-color: #eee;
+  color: #000;
+  box-shadow: 0 0 6px #ccc inset;
+}
+
+body.light-mode #preamble {
+  background-color: #f5f5f5;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+body.light-mode .menu-item span {
+  color: #000;
+}
+
+body.light-mode button {
+  background-color: #f0f0f0;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+body.light-mode button:hover {
+  background-color: #e0e0e0;
+  box-shadow: 0 0 6px #aaa;
+}
+
+body.light-mode .checkbox-item {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ccc;
+}
+
+body.light-mode .checkbox-item input[type="checkbox"] {
+  accent-color: #000; /* or #333 if you want softer */
+}
+
+body.light-mode .checkbox-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* 🌞 Light mode overrides for edit modals */
+body.light-mode .modal {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+body.light-mode ul#edit-list li,
+body.light-mode ul#dropdown-edit-list li {
+  background-color: #f9f9f9;
+}
+
+body.light-mode ul#edit-list input,
+body.light-mode ul#dropdown-edit-list input {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ccc;
+}
+
+body.light-mode ul#edit-list button,
+body.light-mode ul#dropdown-edit-list button {
+  background: #ff6666;
+  color: #fff;
+  border: none;
+}
+
+body.light-mode ul#edit-list button:hover,
+body.light-mode ul#dropdown-edit-list button:hover {
+  background: #cc0000;
+}
+
+body.light-mode #importJsonText {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+/* 🌞 Light mode fix for submenus */
+body.light-mode .submenu {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .submenu li {
+  color: #000;
+}
+
+body.light-mode .submenu li:hover {
+  background-color: #f0f0f0;
+  color: #000;
+  box-shadow: none;
+}
+
+#importJsonText {
+  height: 300px;         /* or go bolder: 400px */
+  min-height: 200px;
+  resize: vertical;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+#profileDisplay {
+  font-size: 0.9rem;
+  color: #00ffff;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+body.light-mode #profileDisplay {
+  color: #0066cc;
+}
+
+#loadProfileModal {
+  display: none;
+}
+
+  .search-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #loadProfileSearch {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #555;
+    background: #1e1e1e;
+    color: #fff;
+    border-radius: 4px;
+  }
+
+/* ✅ Modal visibility fix */
+#loadProfileModal.show,
+#saveProfileModal.show,
+#importJsonModal.show,
+#renameProfileModal.show {
+  display: block;
+  z-index: 2000;
+}
+
+/* 🎯 Custom modal size for config modals */
+#modal.config-modal {
+  width: 700px;
+  min-height: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* 🎯 Taller textarea-like input */
+#modal.config-modal input.config-values {
+  height: 100px;
+  text-align: top;
+  vertical-align: top;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+
+/* 🔧 Config Modal Field Enhancements */
+#newDropdownValues, #newCheckboxValues {
+  height: 80px !important;
+  resize: vertical;
+  text-align: left;
+  vertical-align: top;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  padding: 8px;
+  line-height: 1.4;
+  display: block;
+}
+
+#newDropdownKey, #newCheckboxKey {
+  margin-bottom: 12px;
+}
+
+/* Load Profile Modal Styles */
+#loadProfileModal.modal.show {
+  width: 90vw;
+  max-width: 900px;
+  padding: 20px;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-loader-container {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.folder-list,
+.search-results {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #222;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: hidden; /* Ensures child list scrolls, not container itself */
+}
+
+.folder-label, 
+.results-label {
+  font-weight: bold;
+  color: #00ffff;
+  margin-bottom: 10px;
+}
+
+#loadFolderList, 
+#loadProfileResults {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: #2a2a2a; /* or whatever your modal grey is */
+  color: #f0f0f0; /* optional: ensure text is readable */
+  border-radius: 6px;  
+}
+
+#loadFolderList li, 
+#loadProfileResults li {
+  padding: 8px 12px;
+  background: #1a1a1a;
+  border-bottom: 1px solid #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+
+#loadFolderList li:hover, 
+#loadProfileResults li:hover,
+#loadFolderList li.selected, 
+#loadProfileResults li.selected {
+  background-color: #00ffff22;
+  color: #00ffff;
+}
+
+#manageFolderList li:hover,
+#manageProfileResults li:hover,
+#manageFolderList li.selected,
+#manageProfileResults li.selected {
+  background-color: #00ffff22;
+  color: #00ffff;
+}
+
+.search-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#loadProfileSearch {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #555;
+  background: #1e1e1e;
+  color: #fff;
+  border-radius: 4px;
+}
+
+/* Light mode adjustments */
+body.light-mode #loadFolderList li, 
+body.light-mode #loadProfileResults li {
+  background: #f0f0f0;
+  color: #000;
+}
+
+body.light-mode #loadFolderList li:hover,
+body.light-mode #loadProfileResults li:hover,
+body.light-mode #loadFolderList li.selected,
+body.light-mode #loadProfileResults li.selected {
+  background-color: #e0e0e0;
+  color: #0066cc;
+}
+
+body.light-mode #loadProfileSearch {
+  background: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+/* 🌞 Light Mode: Load & Manage Profile Modals */
+body.light-mode #loadProfileModal.modal,
+body.light-mode #manageProfileModal.modal {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .profile-loader-container,
+body.light-mode .folder-list,
+body.light-mode .search-results {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+}
+
+body.light-mode .folder-label,
+body.light-mode .results-label {
+  color: #0066cc;
+}
+
+body.light-mode #loadFolderList,
+body.light-mode #loadProfileResults,
+body.light-mode #manageFolderList,
+body.light-mode #manageProfileResults {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+body.light-mode #loadFolderList li,
+body.light-mode #loadProfileResults li,
+body.light-mode #manageFolderList li,
+body.light-mode #manageProfileResults li {
+  background-color: #f0f0f0;
+  color: #000000;
+  border-bottom: 1px solid #ddd;
+}
+
+body.light-mode #loadFolderList li:hover,
+body.light-mode #loadProfileResults li:hover,
+body.light-mode #manageFolderList li:hover,
+body.light-mode #manageProfileResults li:hover {
+  background-color: #e0e0e0;
+  color: #0066cc;
+}
+
+body.light-mode #loadFolderList li.selected,
+body.light-mode #loadProfileResults li.selected,
+body.light-mode #manageFolderList li.selected,
+body.light-mode #manageProfileResults li.selected {
+  background-color: #d0eaff;
+  color: #000;
+  font-weight: bold;
+}
+
+body.light-mode .search-bar input,
+body.light-mode #loadProfileSearch,
+body.light-mode #manageProfileSearch {
+  background-color: #ffffff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+/* ⭐️ FAVORITE SLIDE-IN: Sparkle Star appears from the left and nudges the text */
+@keyframes slideInStar {
+  0% {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.sparkle-star {
+  animation: slideInStar 0.4s ease-out forwards;
+  display: inline-block;
+  margin-right: 6px; /* Nudge profile name to the right */
+  color: #00ffff;
+  font-size: 1.2em;
+}
+
+/* 🌠 UNFAVORITE DRIFT: Star floats upward and fades out */
+@keyframes sparkleDrift {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-20px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.sparkle-drift {
+  display: inline-block;
+  animation: sparkleDrift 0.8s ease-out forwards;
+  transform-origin: center;
+  margin-left: -1ch; /* pull slightly left to overlap the star */
+  pointer-events: none;
+  font-size: 1em;
+  color: #00ffffcc;
+  position: relative;
+  z-index: 5;
+}
+
+
+
+
+

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Prompt Builder</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">    
+  <style>
+    body {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔹 Menu Bar -->
+  <div class="top-menu-bar">
+    <ul class="menu">
+      <li class="menu-item">
+        <span>Profile</span>
+        <ul id="fileMenu" class="submenu">
+          <li onclick="newProfile()">New Profile</li>
+          <!-- <li onclick="openLoadProfileModal()">Load Profile…</li> -->
+
+<li class="has-submenu">
+  <span>Load Profile ▸</span>
+  <ul id="loadProfileSubmenu" class="submenu nested-submenu"></ul>
+</li>
+          <li onclick="saveProfile()">Save Profile</li>
+          <li onclick="saveAsProfile()">Save Profile As…</li>
+          <li><hr></li>
+          <li onclick="openManageProfileModal()">Manage Profiles</li>
+        </ul>
+      </li>
+      <li class="menu-item">
+        <span>JSON</span>
+        <ul id="jsonMenu" class="submenu">
+          <li onclick="openImportJsonDialog()">Import JSON as Profile…</li>
+          <li onclick="exportDropdowns()">Export JSON…</li>
+          <li onclick="copyJSON()">Copy JSON to Clipboard</li>
+        </ul>
+      </li>
+
+      <li class="menu-item">
+        <span>Config</span>
+        <ul id="configMenu" class="submenu">
+          <li onclick="addDropdownCategory()">Add Category…</li>
+          <li onclick="addCheckboxGroup()">Add Subdialog Group…</li>
+          <li><hr></li>
+          <li onclick="openReorderDropdownModal()">Reorder Dropdown...</li>
+          <!-- <li onclick="openReorderCheckboxModal()">Reorder Checkbox Categories</li> -->
+        </ul>
+      </li>
+      <li class="menu-item"><span onclick="toggleMenu('memeMenu')">Meme</span></li>
+      <li class="menu-item" id="darkModeToggle"><span onclick="toggleDarkMode()">Light Mode</span></li>
+
+    </ul>
+  </div>
+
+  <!-- 🔹 Page Heading -->
+  <h1>JSON ChatGPT Prompt Builder</h1>
+<div id="profileDisplay" style="margin-bottom: 10px; font-size: 0.95rem; color: #66ccff;">
+  Profile: <span id="currentProfileLabel">[unsaved]</span>
+</div>
+    
+
+  <!-- 🔹 Preamble Field -->
+  <textarea id="preamble" placeholder="Describe your image here..."></textarea>
+
+  <!-- 🔹 Dropdown Fields -->
+  <div class="main-scrollable">
+    <div id="mainFields"></div>
+  </div>
+
+  <!-- 🔹 Dynamically Generated Buttons -->
+  <div class="button-bar"></div>
+
+  <!-- 🔹 Utility Buttons (not affected by re-renders) -->
+  <div class="utility-buttons" style="margin-top: 20px; margin-bottom: 20px;">
+    <button onclick="copyJSON()">📋 Copy JSON</button>
+    <button onclick="copyMidjourneyPrompt()">📸 MidJourney</button>
+    <button onclick="copyAnalyzeThis()">🧠 Analyze THIS</button>  
+    <button onclick="randomizeFields()">🎲 Randomize</button>
+    <button onclick="clearCheckboxes()">🧹 Clear Selections</button>
+    <button onclick="exportDropdowns()">⬇️ Export Config</button>
+    <input type="file" id="importConfig" style="display:none" onchange="importDropdowns(event)" />
+    <button onclick="document.getElementById('importConfig').click()">⬆️ Import Config</button>
+    
+  </div>
+
+  <!-- 🔹 Modal Container (must be outside .button-bar) -->
+  <div id="modal" class="modal"></div>
+
+  <!-- 🔹 Save Profile Modal -->
+  <div id="saveProfileModal" class="modal">
+    <h3>Save Profile</h3>
+    <input type="text" id="profileNameInput" placeholder="Enter profile name" />
+    <div class="dialog-buttons">
+      <button onclick="confirmSaveProfile()">Save</button>
+      <button onclick="closeSaveProfileModal()">Cancel</button>
+    </div>
+  </div>
+    
+<!-- 🔒 Load Profile Modal retired as of 26-05-25 — handled entirely in Manage Modal
+<div id="loadProfileModal" class="modal">
+  <h3>Load Profile</h3>
+  
+  <div class="search-bar">
+    <input type="text" id="loadProfileSearch" placeholder="Search profiles..." oninput="filterProfiles()">
+  </div>
+  
+  <div class="profile-loader-container">
+    <div class="folder-list">
+      <div class="folder-label">Folders</div>
+      <ul id="loadFolderList"></ul>
+    </div>
+    
+    <div class="search-results">
+      <div class="results-label">Profiles</div>
+      <ul id="loadProfileResults"></ul>
+    </div>
+  </div>
+  
+  <div class="dialog-buttons">
+    <button onclick="confirmLoadProfile()">Load Selected</button>
+    <button onclick="closeLoadProfileModal()">Close</button>
+  </div>
+</div>
+-->
+
+    
+    <!-- 🔹 Rename Profile Modal -->
+<div id="renameProfileModal" class="modal">
+  <h3>Rename Profile</h3>
+  <input type="text" id="renameProfileInput" placeholder="Enter new profile name" />
+  <div class="dialog-buttons">
+    <button id="renameConfirmBtn">Rename</button>
+    <button onclick="closeRenameModal()">Cancel</button>
+  </div>
+</div>
+
+    <!-- 🔹 Manage Profile Modal (Split-Pane Style) -->
+<div id="manageProfileModal" class="modal">
+  <h3>Manage Profiles</h3>
+
+  <div class="search-bar">
+    <input type="text" id="manageProfileSearch" placeholder="Search profiles..." oninput="filterManageProfiles()">
+  </div>
+
+  <div class="profile-loader-container">
+  <div class="folder-list">
+    <div class="folder-label">Folders</div>
+    <ul id="manageFolderList"></ul>
+  </div>
+
+  <div class="search-results">
+    <div class="results-label">Profiles</div>
+    <ul id="manageProfileResults"></ul>
+  </div>
+</div>
+
+
+  <div class="dialog-buttons">
+    <button onclick="toggleFavoriteSelectedProfile()">⭐ Favorite</button>
+    <button onclick="loadSelectedProfile()">💾 Load</button>  
+    <button onclick="openRenameSelectedProfileModal()">✏️ Rename</button>
+    <button onclick="deleteSelectedProfile()">🗑 Delete</button>
+    <button onclick="closeManageProfileModal()">Cancel</button>
+  </div>
+</div>
+
+    
+  <!-- 🔹 Import JSON Modal -->
+<div id="importJsonModal" class="modal">
+  <h3>Import JSON as Profile</h3>
+
+  <div class="tabs">
+    <button id="pasteJsonBtn">Paste JSON Text</button>
+    <button id="fromFileBtn">From File</button>
+
+  </div>
+
+  <textarea id="importJsonText" placeholder="Paste JSON (pure JSON or Preamble + JSON)..."></textarea>
+
+  <div class="field-row">
+  <label for="importPreamble">Preamble Prompt:</label>
+  <input type="text" id="importPreamble" placeholder="Required: Preamble for this profile">
+</div>
+
+<div class="field-row">
+  <label for="importProfileName">New Profile Name:</label>
+  <input type="text" id="importProfileName" placeholder="Required: Unique name">
+
+  </div>
+
+  <div class="dialog-buttons">
+    <button onclick="confirmImportJson()">Import</button>
+    <button onclick="closeImportJsonDialog()">Cancel</button>
+  </div>
+
+  <!-- Hidden file input for From File tab -->
+  <input type="file" id="jsonFileInput" style="display:none" onchange="handleJsonFileUpload(event)" />
+</div>
+  
+<style>
+  .profile-tree {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+    font-family: monospace;
+    white-space: pre;
+  }
+  .profile-tree .folder {
+    font-weight: bold;
+    margin-top: 8px;
+  }
+  .profile-tree .profile {
+    margin-left: 20px;
+    cursor: pointer;
+  }
+  .profile-tree .profile:hover {
+    text-decoration: underline;
+  }
+</style>
+ 
+  <!-- 🔹 JS -->
+  <script src="renderer.js"></script>
+</body>
+</html>
