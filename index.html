@@ -53,7 +53,6 @@
           <!-- <li onclick="openReorderCheckboxModal()">Reorder Checkbox Categories</li> -->
         </ul>
       </li>
-      <li class="menu-item"><span onclick="toggleMenu('memeMenu')">Meme</span></li>
       <li class="menu-item" id="darkModeToggle"><span onclick="toggleDarkMode()">Light Mode</span></li>
 
     </ul>
@@ -66,28 +65,79 @@
 </div>
     
 
-  <!-- 🔹 Preamble Field -->
-  <textarea id="preamble" placeholder="Describe your image here..."></textarea>
+  <div class="app-workspace">
+    <section class="builder-pane">
+      <!-- 🔹 Preamble Field -->
+      <textarea id="preamble" placeholder="Describe your image here..."></textarea>
 
-  <!-- 🔹 Dropdown Fields -->
-  <div class="main-scrollable">
-    <div id="mainFields"></div>
-  </div>
+      <div class="preset-bar">
+        <label for="presetMode">Preset</label>
+        <select id="presetMode">
+          <option value="">Choose a mode...</option>
+          <option value="photoreal">Photoreal</option>
+          <option value="cinematic">Cinematic</option>
+          <option value="character">Character</option>
+          <option value="environment">Environment</option>
+          <option value="product">Product</option>
+          <option value="logo">Logo</option>
+          <option value="illustration">Illustration</option>
+        </select>
+        <button onclick="applyPresetMode()">Apply to Empty</button>
+      </div>
 
-  <!-- 🔹 Dynamically Generated Buttons -->
-  <div class="button-bar"></div>
+      <div class="field-search">
+        <label for="fieldSearch">Search</label>
+        <input id="fieldSearch" type="text" placeholder="Find fields or values..." />
+        <button onclick="clearFieldSearch()">Clear</button>
+      </div>
 
-  <!-- 🔹 Utility Buttons (not affected by re-renders) -->
-  <div class="utility-buttons" style="margin-top: 20px; margin-bottom: 20px;">
-    <button onclick="copyJSON()">📋 Copy JSON</button>
-    <button onclick="copyMidjourneyPrompt()">📸 MidJourney</button>
-    <button onclick="copyAnalyzeThis()">🧠 Analyze THIS</button>  
-    <button onclick="randomizeFields()">🎲 Randomize</button>
-    <button onclick="clearCheckboxes()">🧹 Clear Selections</button>
-    <button onclick="exportDropdowns()">⬇️ Export Config</button>
-    <input type="file" id="importConfig" style="display:none" onchange="importDropdowns(event)" />
-    <button onclick="document.getElementById('importConfig').click()">⬆️ Import Config</button>
-    
+      <div class="field-tabs" aria-label="Field category tabs">
+        <button class="field-tab active" data-field-tab="all" onclick="setFieldTab('all')">All</button>
+        <button class="field-tab" data-field-tab="subject" onclick="setFieldTab('subject')">Subject</button>
+        <button class="field-tab" data-field-tab="style" onclick="setFieldTab('style')">Style</button>
+        <button class="field-tab" data-field-tab="scene" onclick="setFieldTab('scene')">Scene</button>
+        <button class="field-tab" data-field-tab="cameraLight" onclick="setFieldTab('cameraLight')">Camera & Light</button>
+        <button class="field-tab" data-field-tab="finish" onclick="setFieldTab('finish')">Finish</button>
+      </div>
+
+      <!-- 🔹 Dropdown Fields -->
+      <div class="main-scrollable">
+        <div id="mainFields"></div>
+      </div>
+
+      <!-- 🔹 Dynamically Generated Buttons -->
+      <div class="button-bar"></div>
+
+      <!-- 🔹 Utility Buttons (not affected by re-renders) -->
+      <div class="utility-buttons" style="margin-top: 20px; margin-bottom: 20px;">
+        <button onclick="copyJSON()">📋 Copy JSON</button>
+        <button onclick="copyMidjourneyPrompt()">📸 MidJourney</button>
+        <button onclick="copyAnalyzeThis()">🧠 Analyze THIS</button>  
+        <button onclick="randomizeFields()">🎲 Randomize</button>
+        <button onclick="unlockAllRandomizerLocks()">🔓 Unlock All</button>
+        <button onclick="clearCheckboxes()">🧹 Clear Selections</button>
+        <button onclick="exportDropdowns()">⬇️ Export Config</button>
+        <input type="file" id="importConfig" style="display:none" onchange="importDropdowns(event)" />
+        <button onclick="document.getElementById('importConfig').click()">⬆️ Import Config</button>
+      </div>
+    </section>
+
+    <aside class="preview-pane">
+      <div class="preview-toolbar">
+        <label for="previewFormat">Preview</label>
+        <select id="previewFormat">
+          <option value="json">JSON</option>
+          <option value="openai">OpenAI Image</option>
+          <option value="midjourney">MidJourney</option>
+          <option value="sdxl">SDXL</option>
+          <option value="brief">Plain Brief</option>
+          <option value="analyze">Analyze Template</option>
+        </select>
+        <button onclick="copyPreview()">📋 Copy</button>
+      </div>
+      <div id="promptHealth" class="prompt-health"></div>
+      <pre id="livePreview" aria-live="polite"></pre>
+    </aside>
   </div>
 
   <!-- 🔹 Modal Container (must be outside .button-bar) -->

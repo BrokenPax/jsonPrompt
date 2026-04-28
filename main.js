@@ -7,6 +7,7 @@ const PROFILE_DIR = path.join(__dirname, 'profiles');
 
 const CHECKBOX_PATH = path.join(DATA_DIR, 'checkboxCategories.json');
 const DROPDOWN_PATH = path.join(DATA_DIR, 'dropdownOptions.json');
+const DROPDOWN_ORDER_PATH = path.join(DATA_DIR, 'dropdownOrder.json');
 
 // Ensure required directories exist
 [DATA_DIR, PROFILE_DIR].forEach(dir => {
@@ -113,14 +114,12 @@ ipcMain.handle('getProfileStructure', async () => {
 });
 
 ipcMain.handle('save-dropdown-order', async (event, order) => {
-  const file = path.join(app.getPath('userData'), 'dropdown_order.json');
-  await fs.promises.writeFile(file, JSON.stringify(order, null, 2));
+  await fs.promises.writeFile(DROPDOWN_ORDER_PATH, JSON.stringify(order, null, 2));
 });
 
 ipcMain.handle('read-dropdown-order', async () => {
-  const file = path.join(app.getPath('userData'), 'dropdown_order.json');
   try {
-    const data = await fs.promises.readFile(file);
+    const data = await fs.promises.readFile(DROPDOWN_ORDER_PATH);
     return JSON.parse(data);
   } catch {
     return []; // fallback
@@ -128,16 +127,17 @@ ipcMain.handle('read-dropdown-order', async () => {
 });
 
 ipcMain.handle('write-dropdown-order', async (event, data) => {
-  const filePath = path.join(__dirname, 'data', 'dropdownOrder.json');
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  await fs.promises.writeFile(DROPDOWN_ORDER_PATH, JSON.stringify(data, null, 2));
 });
       
 
 // ---- App Bootstrap ----
 function createWindow() {
   const win = new BrowserWindow({
-    width: 1200,
-    height: 900,
+    width: 1440,
+    height: 1080,
+    minWidth: 1200,
+    minHeight: 850,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,

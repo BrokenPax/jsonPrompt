@@ -3,26 +3,515 @@
 let dropdownOptions = {};
 let checkboxCategories = {};
 let randomizedCheckboxes = {};
-let selectedCheckboxes = JSON.parse(localStorage.getItem('selectedCheckboxes')) || {};
+let selectedCheckboxes = getStoredJson('selectedCheckboxes', {});
+let selectedDropdowns = getStoredJson('selectedDropdowns', {});
+let lockedDropdowns = getStoredJson('lockedDropdowns', {});
+let lockedCheckboxGroups = getStoredJson('lockedCheckboxGroups', {});
 let dropdownOrder = [];
 let draggedKey = null;
 let currentProfileName = null; // null until user saves or loads
 let structure;
 let selectedFolder = null;
 let renameCallback = null;
+let activeFieldTab = localStorage.getItem('activeFieldTab') || 'all';
+let activeFieldSearch = '';
+
+const fieldTabs = {
+  all: null,
+  subject: [
+    'prompt_intent',
+    'subject_type',
+    'subject_action',
+    'pose_body_language',
+    'facial_expression'
+  ],
+  style: [
+    'image_medium',
+    'style',
+    'render_style',
+    'artist_style',
+    'director_style',
+    'realism_level',
+    'surrealism_level',
+    'mood_atmosphere'
+  ],
+  scene: [
+    'environment',
+    'background_setting',
+    'environment_density',
+    'time_of_day',
+    'season',
+    'weather'
+  ],
+  cameraLight: [
+    'shot_size',
+    'camera_angle',
+    'composition',
+    'lens_focal_length',
+    'depth_of_field',
+    'lighting_quality',
+    'lighting_direction',
+    'lighting_contrast',
+    'lighting_color',
+    'aspect_ratio'
+  ],
+  finish: [
+    'color_palette',
+    'accent_color',
+    'color_grading',
+    'material_texture',
+    'detail_level',
+    'output_quality',
+    'seed'
+  ]
+};
+
+const checkboxTabs = {
+  all: null,
+  subject: [
+    'Subject Details',
+    'Wardrobe & Props'
+  ],
+  style: [
+    'Texture & Material Details'
+  ],
+  scene: [
+    'Environment Details',
+    'Atmosphere & Motion'
+  ],
+  cameraLight: [
+    'Composition Aids',
+    'Lighting Effects',
+    'Lens & Camera Overlays'
+  ],
+  finish: [
+    'Post-Processing',
+    'Negative Constraints'
+  ]
+};
+
+if (fieldTabs[activeFieldTab] === undefined) {
+  activeFieldTab = 'all';
+  localStorage.setItem('activeFieldTab', activeFieldTab);
+}
 
 const checkboxButtonLabels = {
-  "Background Options": "🖼 Background Options",
-  "Damage Effects": "💥 Damage Effects",
-  "SFX": "🔊 SFX",
-  "Camera Overlays": "📷 Camera Overlays",
-  "Lighting Effects": "💡 Lighting Effects",
-  "Water Details": "🌊 Water Details",
+  "Subject Details": "👤 Subject Details",
+  "Wardrobe & Props": "🧥 Wardrobe & Props",
+  "Environment Details": "🏙 Environment Details",
   "Composition Aids": "📐 Composition Aids",
+  "Lighting Effects": "💡 Lighting Effects",
+  "Atmosphere & Motion": "🌫 Atmosphere & Motion",
+  "Lens & Camera Overlays": "📷 Lens & Camera Overlays",
+  "Texture & Material Details": "🧱 Texture & Material Details",
   "Post-Processing": "🎞 Post-Processing",
-  "Season": "🗓️ Season"
+  "Negative Constraints": "🚫 Negative Constraints"
   // New entries will default to plain group name
 };
+
+const presetModes = {
+  photoreal: {
+    tab: 'cameraLight',
+    fields: {
+      prompt_intent: 'final artwork',
+      image_medium: 'photograph',
+      style: 'cinematic realism',
+      render_style: 'photorealistic',
+      realism_level: 'photorealistic',
+      shot_size: 'medium shot',
+      camera_angle: 'eye-level',
+      lens_focal_length: '50mm natural perspective',
+      depth_of_field: 'shallow depth of field',
+      lighting_quality: 'natural daylight',
+      lighting_contrast: 'balanced contrast',
+      color_grading: 'film emulation',
+      detail_level: 'high detail',
+      output_quality: 'high resolution',
+      aspect_ratio: '3:2'
+    },
+    checkboxes: {
+      'Lens & Camera Overlays': ['film grain', 'halation'],
+      'Post-Processing': ['cinematic sharpening', 'subtle film grain'],
+      'Negative Constraints': ['text', 'watermark', 'low resolution']
+    }
+  },
+  cinematic: {
+    tab: 'cameraLight',
+    fields: {
+      prompt_intent: 'cinematic frame',
+      image_medium: 'photograph',
+      style: 'cinematic realism',
+      render_style: 'stylized realism',
+      shot_size: 'wide shot',
+      camera_angle: 'low angle',
+      composition: 'strong leading lines',
+      lens_focal_length: '35mm documentary',
+      depth_of_field: 'medium depth of field',
+      lighting_quality: 'cinematic key light',
+      lighting_direction: 'three-quarter lighting',
+      lighting_contrast: 'high contrast',
+      color_grading: 'cinematic teal and orange',
+      mood_atmosphere: 'mysterious',
+      output_quality: 'production concept art',
+      aspect_ratio: '16:9'
+    },
+    checkboxes: {
+      'Composition Aids': ['leading lines', 'depth layering'],
+      'Lighting Effects': ['soft rim light', 'ambient bloom'],
+      'Post-Processing': ['tone curve', 'cinematic sharpening']
+    }
+  },
+  character: {
+    tab: 'subject',
+    fields: {
+      prompt_intent: 'character design sheet',
+      subject_type: 'single person',
+      subject_action: 'standing still',
+      pose_body_language: 'confident',
+      facial_expression: 'neutral',
+      image_medium: 'digital illustration',
+      render_style: 'stylized realism',
+      shot_size: 'full body',
+      camera_angle: 'eye-level',
+      background_setting: 'plain seamless background',
+      lighting_quality: 'soft studio light',
+      detail_level: 'high detail',
+      aspect_ratio: '2:3'
+    },
+    checkboxes: {
+      'Subject Details': ['clear subject silhouette', 'expressive eyes', 'visible hands'],
+      'Wardrobe & Props': ['layered clothing', 'boots'],
+      'Negative Constraints': ['extra fingers', 'extra limbs', 'bad anatomy']
+    }
+  },
+  environment: {
+    tab: 'scene',
+    fields: {
+      prompt_intent: 'environment design',
+      subject_type: 'landscape',
+      image_medium: 'digital illustration',
+      style: 'fantasy',
+      render_style: 'painterly',
+      environment: 'surreal dreamscape',
+      background_setting: 'natural landscape',
+      environment_density: 'richly detailed',
+      time_of_day: 'golden hour',
+      weather: 'clear',
+      shot_size: 'establishing shot',
+      camera_angle: 'eye-level',
+      lens_focal_length: '24mm wide',
+      depth_of_field: 'deep focus',
+      lighting_quality: 'natural daylight',
+      detail_level: 'intricate detail',
+      aspect_ratio: '16:9'
+    },
+    checkboxes: {
+      'Environment Details': ['foreground plants', 'distant skyline', 'visible horizon line'],
+      'Composition Aids': ['leading lines', 'layered foreground and background'],
+      'Atmosphere & Motion': ['floating dust motes']
+    }
+  },
+  product: {
+    tab: 'subject',
+    fields: {
+      prompt_intent: 'product mockup',
+      subject_type: 'object still life',
+      subject_action: 'standing still',
+      image_medium: 'photograph',
+      render_style: 'photorealistic',
+      background_setting: 'plain seamless background',
+      environment_density: 'minimal',
+      shot_size: 'close-up',
+      camera_angle: 'eye-level',
+      lens_focal_length: '85mm portrait',
+      depth_of_field: 'shallow depth of field',
+      lighting_quality: 'soft studio light',
+      lighting_contrast: 'soft contrast',
+      material_texture: 'glossy',
+      detail_level: 'high detail',
+      output_quality: 'commercial campaign quality',
+      aspect_ratio: '4:5'
+    },
+    checkboxes: {
+      'Lighting Effects': ['specular highlights', 'soft rim light'],
+      'Texture & Material Details': ['transparent glass', 'wet reflections'],
+      'Negative Constraints': ['text', 'watermark', 'blurry subject']
+    }
+  },
+  logo: {
+    tab: 'style',
+    fields: {
+      prompt_intent: 'final artwork',
+      subject_type: 'logo or emblem',
+      image_medium: 'vector art',
+      style: 'minimalist surrealism',
+      render_style: 'flat graphic',
+      background_setting: 'plain seamless background',
+      environment_density: 'minimal',
+      composition: 'centered composition',
+      lighting_quality: 'flat illustration lighting',
+      color_palette: 'limited two-color palette',
+      detail_level: 'intentionally simplified',
+      realism_level: 'symbolic',
+      output_quality: 'clean final image',
+      aspect_ratio: '1:1'
+    },
+    checkboxes: {
+      'Composition Aids': ['center frame', 'strong silhouette'],
+      'Post-Processing': ['clean vector polish'],
+      'Negative Constraints': ['watermark', 'blurry subject', 'muddy colors']
+    }
+  },
+  illustration: {
+    tab: 'style',
+    fields: {
+      prompt_intent: 'editorial illustration',
+      image_medium: 'digital illustration',
+      style: 'storybook surrealism',
+      render_style: 'painterly',
+      realism_level: 'stylized',
+      surrealism_level: 'subtle surrealism',
+      color_palette: 'pastel palette',
+      lighting_quality: 'flat illustration lighting',
+      material_texture: 'paper grain',
+      detail_level: 'clean detail',
+      output_quality: 'gallery quality',
+      aspect_ratio: '4:5'
+    },
+    checkboxes: {
+      'Texture & Material Details': ['paper grain', 'brush strokes'],
+      'Lighting Effects': ['soft rim light'],
+      'Post-Processing': ['soft bloom', 'tone curve']
+    }
+  }
+};
+
+function isEmptyChoice(value) {
+  return !value || ['null', 'none', 'n/a'].includes(String(value).trim().toLowerCase());
+}
+
+function normalizeOptionList(options) {
+  const seen = new Set();
+  return options.filter(option => {
+    const normalized = String(option).trim().toLowerCase();
+    if (!normalized || seen.has(normalized)) return false;
+    seen.add(normalized);
+    return true;
+  });
+}
+
+function isDropdownLocked(key) {
+  return !!lockedDropdowns[key];
+}
+
+function isCheckboxGroupLocked(key) {
+  return !!lockedCheckboxGroups[key];
+}
+
+function persistRandomizerLocks() {
+  localStorage.setItem('lockedDropdowns', JSON.stringify(lockedDropdowns));
+  localStorage.setItem('lockedCheckboxGroups', JSON.stringify(lockedCheckboxGroups));
+}
+
+function toggleDropdownLock(key) {
+  lockedDropdowns[key] = !lockedDropdowns[key];
+  if (!lockedDropdowns[key]) delete lockedDropdowns[key];
+  persistRandomizerLocks();
+  renderFields();
+}
+
+function toggleCheckboxGroupLock(key) {
+  lockedCheckboxGroups[key] = !lockedCheckboxGroups[key];
+  if (!lockedCheckboxGroups[key]) delete lockedCheckboxGroups[key];
+  persistRandomizerLocks();
+  renderButtonBar();
+}
+
+function unlockAllRandomizerLocks() {
+  lockedDropdowns = {};
+  lockedCheckboxGroups = {};
+  persistRandomizerLocks();
+  renderFields();
+  renderButtonBar();
+}
+
+function captureDropdownSelections() {
+  const selections = {};
+  for (const key in dropdownOptions) {
+    const el = document.getElementById(key);
+    if (el) selections[key] = el.value;
+  }
+  return selections;
+}
+
+function getDropdownValue(key) {
+  const el = document.getElementById(key);
+  return el ? el.value : selectedDropdowns[key];
+}
+
+function updateSelectedDropdown(key, value) {
+  selectedDropdowns[key] = value;
+  localStorage.setItem('selectedDropdowns', JSON.stringify(selectedDropdowns));
+  updatePreview();
+}
+
+function setDropdownValue(key, value, { onlyEmpty = true } = {}) {
+  if (!dropdownOptions[key] || isEmptyChoice(value)) return false;
+  if (onlyEmpty && !isEmptyChoice(getDropdownValue(key))) return false;
+
+  if (!dropdownOptions[key].includes(value)) {
+    dropdownOptions[key].push(value);
+  }
+
+  selectedDropdowns[key] = value;
+  const select = document.getElementById(key);
+  if (select) {
+    ensureSelectOption(key, value);
+    select.value = value;
+  }
+  return true;
+}
+
+function addCheckboxValues(category, values, { onlyEmpty = true } = {}) {
+  if (!checkboxCategories[category] || !Array.isArray(values)) return false;
+  if (onlyEmpty && getSelectedValues(category).length) return false;
+
+  const existing = selectedCheckboxes[category] || [];
+  const next = [...existing];
+
+  values.forEach(value => {
+    if (!checkboxCategories[category].includes(value)) {
+      checkboxCategories[category].push(value);
+    }
+    if (!next.includes(value)) next.push(value);
+  });
+
+  if (!next.length) return false;
+  selectedCheckboxes[category] = next;
+  return true;
+}
+
+async function applyPresetMode() {
+  const select = document.getElementById('presetMode');
+  const preset = presetModes[select?.value];
+  if (!preset) {
+    alert('Choose a preset mode first.');
+    return;
+  }
+
+  let changedFields = 0;
+  let changedGroups = 0;
+  let dropdownsChanged = false;
+  let checkboxesChanged = false;
+
+  Object.entries(preset.fields || {}).forEach(([key, value]) => {
+    const before = dropdownOptions[key]?.length || 0;
+    if (setDropdownValue(key, value, { onlyEmpty: true })) changedFields += 1;
+    if ((dropdownOptions[key]?.length || 0) !== before) dropdownsChanged = true;
+  });
+
+  Object.entries(preset.checkboxes || {}).forEach(([category, values]) => {
+    const before = checkboxCategories[category]?.length || 0;
+    if (addCheckboxValues(category, values, { onlyEmpty: true })) changedGroups += 1;
+    if ((checkboxCategories[category]?.length || 0) !== before) checkboxesChanged = true;
+  });
+
+  localStorage.setItem('selectedDropdowns', JSON.stringify(selectedDropdowns));
+  localStorage.setItem('selectedCheckboxes', JSON.stringify(selectedCheckboxes));
+
+  if (dropdownsChanged) await window.electronAPI.saveDropdowns(dropdownOptions);
+  if (checkboxesChanged) await window.electronAPI.saveCheckboxes(checkboxCategories);
+
+  if (preset.tab) setFieldTab(preset.tab);
+  renderFields();
+  renderButtonBar();
+  updatePreview();
+
+  alert(`Applied preset to ${changedFields} fields and ${changedGroups} groups.`);
+}
+
+function getVisibleDropdownKeys() {
+  const orderedKeys = dropdownOrder.length ? dropdownOrder : Object.keys(dropdownOptions);
+  if (activeFieldSearch) {
+    return orderedKeys.filter(key => dropdownMatchesSearch(key, activeFieldSearch));
+  }
+
+  const tabKeys = fieldTabs[activeFieldTab];
+  if (!tabKeys) return orderedKeys;
+  const allowed = new Set(tabKeys);
+  return orderedKeys.filter(key => allowed.has(key));
+}
+
+function getVisibleCheckboxCategoryKeys() {
+  const keys = Object.keys(checkboxCategories);
+  if (activeFieldSearch) {
+    return keys.filter(key => checkboxCategoryMatchesSearch(key, activeFieldSearch));
+  }
+
+  const tabKeys = checkboxTabs[activeFieldTab];
+  if (!tabKeys) return keys;
+  const allowed = new Set(tabKeys);
+  return keys.filter(key => allowed.has(key));
+}
+
+function normalizeSearchText(value) {
+  return String(value || '').toLowerCase().replace(/_/g, ' ');
+}
+
+function dropdownMatchesSearch(key, searchTerm) {
+  const haystack = [
+    key,
+    key.replace(/_/g, ' '),
+    selectedDropdowns[key],
+    ...(dropdownOptions[key] || [])
+  ].map(normalizeSearchText).join(' ');
+  return haystack.includes(searchTerm);
+}
+
+function checkboxCategoryMatchesSearch(key, searchTerm) {
+  const haystack = [
+    key,
+    ...(selectedCheckboxes[key] || []),
+    ...(checkboxCategories[key] || [])
+  ].map(normalizeSearchText).join(' ');
+  return haystack.includes(searchTerm);
+}
+
+function setFieldSearch(value) {
+  activeFieldSearch = normalizeSearchText(value).trim();
+  renderFields();
+  renderButtonBar();
+}
+
+function clearFieldSearch() {
+  const input = document.getElementById('fieldSearch');
+  if (input) input.value = '';
+  setFieldSearch('');
+}
+
+function setFieldTab(tab) {
+  activeFieldTab = fieldTabs[tab] === undefined ? 'all' : tab;
+  localStorage.setItem('activeFieldTab', activeFieldTab);
+  renderFieldTabs();
+  renderFields();
+  renderButtonBar();
+}
+
+function renderFieldTabs() {
+  document.querySelectorAll('.field-tab').forEach(button => {
+    button.classList.toggle('active', button.dataset.fieldTab === activeFieldTab);
+  });
+}
+
+function getStoredJson(key, fallback) {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : fallback;
+  } catch {
+    localStorage.removeItem(key);
+    return fallback;
+  }
+}
 
 // Force all modals hidden immediately (before anything renders)
 window.addEventListener('load', () => {
@@ -32,6 +521,15 @@ window.addEventListener('load', () => {
 
 // ✅ Only use DOMContentLoaded
 document.addEventListener('DOMContentLoaded', async () => {
+  const preamble = document.getElementById('preamble');
+  if (preamble) preamble.addEventListener('input', updatePreview);
+
+  const previewFormat = document.getElementById('previewFormat');
+  if (previewFormat) previewFormat.addEventListener('change', updatePreview);
+
+  const fieldSearch = document.getElementById('fieldSearch');
+  if (fieldSearch) fieldSearch.addEventListener('input', () => setFieldSearch(fieldSearch.value));
+
   // 🧼 Force-hide Load Profile Modal
   const loadModal = document.getElementById('loadProfileModal');
   if (loadModal) {
@@ -49,11 +547,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    dropdownOptions = await window.electronAPI.readDropdowns();   
     dropdownOptions = await window.electronAPI.readDropdowns();
 
 // 🧠 Full sync: add new keys, remove stale ones
-const storedOrder = JSON.parse(localStorage.getItem('dropdownOrder')) || [];
+const persistedOrder = await window.electronAPI.readDropdownOrder();
+const storedOrder = Array.isArray(persistedOrder) && persistedOrder.length
+  ? persistedOrder
+  : getStoredJson('dropdownOrder', []);
 const currentKeys = Object.keys(dropdownOptions);
 
 // Step 1: Add new keys
@@ -91,9 +591,11 @@ if (!Array.isArray(dropdownOrder) || dropdownOrder.length === 0) {
     checkboxCategories = await window.electronAPI.readCheckboxes();
     console.log("✅ readCheckboxes result:", checkboxCategories);
 
+    renderFieldTabs();
     renderFields();
     renderButtonBar();  
     populateLoadProfileSubmenu();
+    updatePreview();
 
   } catch (err) {
     console.error("❌ Renderer failed to load dropdowns/checkboxes:", err);
@@ -125,31 +627,34 @@ document.addEventListener('keydown', e => {
 
 
 const excludedAnalyzeKeys = [
-  "meme_reference",
-  "starter_pack_accessories",
-  "Background Options",
-  "Damage Effects",
-  "SFX",
-  "Camera Overlays",
-  "Lighting Effects",
-  "Water Details",
-  "Composition Aids",
-  "Post-Processing",
-  "Season"
+  "seed"
 ];
 
 
 function renderFields() {
   console.log("✅ renderFields() triggered"); 
   const container = document.getElementById('mainFields');
+  const currentSelections = captureDropdownSelections();
+  selectedDropdowns = { ...selectedDropdowns, ...currentSelections };
   container.innerHTML = '';
 
   // 🔽 Dropdowns
-  const orderedKeys = dropdownOrder.length ? dropdownOrder : Object.keys(dropdownOptions);
-for (const key of orderedKeys) {
+  const visibleKeys = getVisibleDropdownKeys();
+  if (!visibleKeys.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-search-results';
+    empty.textContent = activeFieldSearch
+      ? 'No fields matched your search.'
+      : 'No fields in this tab yet.';
+    container.appendChild(empty);
+    return;
+  }
+
+  for (const key of visibleKeys) {
 
     const row = document.createElement('div');
     row.className = 'field-row';
+    if (isDropdownLocked(key)) row.classList.add('is-locked');
 
     const label = document.createElement('label');
     label.textContent = key.replace(/_/g, ' ');
@@ -161,14 +666,30 @@ for (const key of orderedKeys) {
       opt.value = opt.textContent = option;
       select.appendChild(opt);
     });
+    const currentValue = selectedDropdowns[key];
+    if (currentValue && dropdownOptions[key].includes(currentValue)) {
+      select.value = currentValue;
+    }
+    select.addEventListener('change', () => updateSelectedDropdown(key, select.value));
 
     const manageBtn = document.createElement('button');
     manageBtn.textContent = '✏️';
     manageBtn.style.marginLeft = '6px';
     manageBtn.onclick = () => openEditDropdownModal(key);
 
+    const lockBtn = document.createElement('button');
+    lockBtn.className = 'lock-toggle';
+    lockBtn.type = 'button';
+    lockBtn.textContent = isDropdownLocked(key) ? '🔒' : '🔓';
+    lockBtn.title = isDropdownLocked(key)
+      ? `Unlock ${key.replace(/_/g, ' ')} for randomize`
+      : `Lock ${key.replace(/_/g, ' ')} during randomize`;
+    lockBtn.setAttribute('aria-label', lockBtn.title);
+    lockBtn.onclick = () => toggleDropdownLock(key);
+
     row.appendChild(label);
     row.appendChild(select);
+    row.appendChild(lockBtn);
     row.appendChild(manageBtn);
     container.appendChild(row);
   }
@@ -184,26 +705,54 @@ function renderButtonBar() {
 
   buttonBar.innerHTML = ''; // clear old buttons
 
-  Object.keys(checkboxCategories).forEach(key => {
+  const visibleKeys = getVisibleCheckboxCategoryKeys();
+  if (!visibleKeys.length && activeFieldSearch) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-search-results compact';
+    empty.textContent = 'No matching groups.';
+    buttonBar.appendChild(empty);
+    return;
+  }
+
+  visibleKeys.forEach(key => {
+    const group = document.createElement('div');
+    group.className = 'button-lock-group';
+    if (isCheckboxGroupLocked(key)) group.classList.add('is-locked');
+
     const btn = document.createElement('button');
     btn.textContent = getButtonLabel(key);
     btn.onclick = () => openDialog(key);
-    buttonBar.appendChild(btn);
+
+    const lockBtn = document.createElement('button');
+    lockBtn.className = 'lock-toggle';
+    lockBtn.type = 'button';
+    lockBtn.textContent = isCheckboxGroupLocked(key) ? '🔒' : '🔓';
+    lockBtn.title = isCheckboxGroupLocked(key)
+      ? `Unlock ${key} for randomize`
+      : `Lock ${key} during randomize`;
+    lockBtn.setAttribute('aria-label', lockBtn.title);
+    lockBtn.onclick = () => toggleCheckboxGroupLock(key);
+
+    group.appendChild(btn);
+    group.appendChild(lockBtn);
+    buttonBar.appendChild(group);
   });
 }
 
 function getButtonLabel(key) {
   const emojiMap = {
-    "Background Options": "🖼",
-    "Damage Effects": "💥",
-    "SFX": "🔊",
-    "Camera Overlays": "📷",
-    "Lighting Effects": "💡",
-    "Water Details": "🌊",
+    "Subject Details": "👤",
+    "Wardrobe & Props": "🧥",
+    "Environment Details": "🏙",
     "Composition Aids": "📐",
-    "Post-Processing": "🎞"
+    "Lighting Effects": "💡",
+    "Atmosphere & Motion": "🌫",
+    "Lens & Camera Overlays": "📷",
+    "Texture & Material Details": "🧱",
+    "Post-Processing": "🎞",
+    "Negative Constraints": "🚫"
   };
-  return checkboxButtonLabels[key] || `➕ ${key}`;
+  return checkboxButtonLabels[key] || `${emojiMap[key] || '+'} ${key}`.trim();
 }
 
 function updateSelectedCheckbox(category, value, isChecked) {
@@ -291,6 +840,8 @@ function closeDialog() {
   const modal = document.getElementById('modal');
   modal.classList.remove('show');
   modal.classList.remove('manage-profiles');
+  modal.classList.remove('manage-profiles-modal');
+  modal.classList.remove('config-modal');
   modal.innerHTML = ''; // fully wipe content
 }
 
@@ -325,8 +876,14 @@ async function saveNewDropdown() {
   if (!key || !raw) return;
 
   dropdownOptions[key] = raw.split(',').map(v => v.trim()).filter(Boolean);
+  if (!dropdownOrder.includes(key)) {
+    dropdownOrder.push(key);
+    localStorage.setItem('dropdownOrder', JSON.stringify(dropdownOrder));
+    await window.electronAPI.writeDropdownOrder(dropdownOrder);
+  }
   await window.electronAPI.saveDropdowns(dropdownOptions);
   renderFields();
+  updatePreview();
   closeDialog();
 }
 
@@ -364,6 +921,7 @@ async function saveNewCheckboxGroup() {
 await window.electronAPI.saveCheckboxes(checkboxCategories);
 closeDialog();
 renderButtonBar();
+updatePreview();
 openDialog(key); // now the category definitely exists
 
 }
@@ -397,6 +955,7 @@ function openCheckboxSelectionModal(category) {
 
     input.onchange = () => {
       updateSelectedCheckbox(category, value, input.checked);
+      updatePreview();
     };
 
     label.appendChild(input);
@@ -558,7 +1117,8 @@ function openReorderDropdownModal() {
   const save = document.createElement('button');
   save.textContent = 'Save Order';
   save.onclick = async () => {
-    await window.electronAPI.saveDropdownOrder(dropdownOrder); // 🛠 we’ll define this
+    localStorage.setItem('dropdownOrder', JSON.stringify(dropdownOrder));
+    await window.electronAPI.writeDropdownOrder(dropdownOrder);
     renderFields();
     closeDialog();
   };
@@ -584,131 +1144,227 @@ function openReorderDropdownModal() {
 }
 
 function copyJSON() {
-  const obj = {};
-  let preamble = document.getElementById('preamble').value.trim();
-const prefix = "Use the following JSON parameters to generate an image of ";
-
-if (preamble && !preamble.startsWith(prefix)) {
-  preamble = prefix + preamble;
-}
-
-if (preamble) obj.preamble = preamble;
-
-
-  for (const key in dropdownOptions) {
-    const el = document.getElementById(key);
-    if (el && el.value) obj[key] = el.value;
-  }
-
-  for (const cat in checkboxCategories) {
-    const values = selectedCheckboxes[cat] || [];
-    if (values.length) obj[cat] = values.join(', ');
-  }
-
-  navigator.clipboard.writeText(JSON.stringify(obj, null, 2));
+  navigator.clipboard.writeText(buildPreviewOutput('json'));
   alert('Copied JSON to clipboard!');
 }
 
 function copyMidjourneyPrompt() {
+  navigator.clipboard.writeText(buildPreviewOutput('midjourney'));
+  alert("MidJourney prompt copied to clipboard!");
+}
+
+function copyPreview() {
+  const format = document.getElementById('previewFormat')?.value || 'json';
+  navigator.clipboard.writeText(buildPreviewOutput(format));
+  alert('Preview copied to clipboard!');
+}
+
+function buildPromptObject() {
   const obj = {};
+  let preamble = document.getElementById('preamble').value.trim();
+  const prefix = "Use the following JSON parameters to generate an image of ";
+  if (preamble && !preamble.startsWith(prefix)) {
+    preamble = prefix + preamble;
+  }
+
+  if (preamble) obj.preamble = preamble;
+
+  for (const key in dropdownOptions) {
+    const value = getDropdownValue(key);
+    if (!isEmptyChoice(value)) obj[key] = value;
+  }
+
+  for (const cat in checkboxCategories) {
+    const values = getSelectedValues(cat);
+    if (values.length) obj[cat] = values.join(', ');
+  }
+
+  return obj;
+}
+
+function getCleanPreamble() {
   let preamble = document.getElementById('preamble').value.trim();
   const prefix = "Use the following JSON parameters to generate an image of ";
   if (preamble.startsWith(prefix)) {
     preamble = preamble.slice(prefix.length);
   }
+  return preamble;
+}
 
+function getPromptSections() {
+  const sectionDefs = [
+    ['Subject', ['subject_type', 'subject_action', 'pose_body_language', 'facial_expression']],
+    ['Style', ['prompt_intent', 'image_medium', 'style', 'render_style', 'artist_style', 'director_style']],
+    ['Setting', ['environment', 'background_setting', 'environment_density', 'time_of_day', 'season', 'weather']],
+    ['Camera', ['shot_size', 'camera_angle', 'composition', 'lens_focal_length', 'depth_of_field']],
+    ['Lighting', ['lighting_quality', 'lighting_direction', 'lighting_contrast', 'lighting_color']],
+    ['Color', ['color_palette', 'accent_color', 'color_grading']],
+    ['Finish', ['material_texture', 'detail_level', 'realism_level', 'surrealism_level', 'mood_atmosphere', 'output_quality']]
+  ];
+
+  return sectionDefs
+    .map(([label, keys]) => {
+      const values = keys
+        .map(key => {
+          const value = getVal(key);
+          return value ? `${key.replace(/_/g, ' ')}: ${value}` : null;
+        })
+        .filter(Boolean);
+      return values.length ? { label, text: values.join('; ') } : null;
+    })
+    .filter(Boolean);
+}
+
+function getCheckboxSections(includeNegative = true) {
+  return Object.keys(checkboxCategories)
+    .filter(category => includeNegative || category !== 'Negative Constraints')
+    .map(category => {
+      const values = getSelectedValues(category);
+      return values.length ? { label: category, text: values.join(', ') } : null;
+    })
+    .filter(Boolean);
+}
+
+function buildMidjourneyPrompt() {
   // Core structure
-  const base = preamble;
+  const base = getCleanPreamble();
   const baseDescriptors = [
-    getVal('character_substrate_base'),
-    getVal('character_substrate_coating'),
-    getVal('body_language'),
-    getVal('body_response')
+    getVal('subject_type'),
+    getVal('subject_action'),
+    getVal('pose_body_language'),
+    getVal('facial_expression')
   ].filter(Boolean).join(', ');
 
   const environment = [
     getVal('environment'),
-    getVal('environmental_density')
+    getVal('background_setting'),
+    getVal('environment_density'),
+    getVal('time_of_day'),
+    getVal('weather')
   ].filter(Boolean).join(', ');
 
   const artStyle = [
+    getVal('image_medium'),
     getVal('style'),
-    `style of ${getVal('artist_style')}`,
+    getVal('render_style'),
+    getVal('artist_style') ? `style of ${getVal('artist_style')}` : null,
     getVal('director_style') ? `directed by ${getVal('director_style')}` : null
   ].filter(Boolean).join(', ');
 
   const lighting = [
-    getVal('lighting_type'),
+    getVal('lighting_quality'),
     getVal('lighting_direction'),
-    getVal('lighting_intensity'),
-    getVal('lighting_accent_colors') ? `rim light: ${getVal('lighting_accent_colors')}` : null
-  ].filter(Boolean).join(', ');
-
-  const background = [
-    getVal('background_color'),
-    getVal('background_texture')
+    getVal('lighting_contrast'),
+    getVal('lighting_color') ? `lighting color: ${getVal('lighting_color')}` : null
   ].filter(Boolean).join(', ');
 
   const color = [
-    getVal('color_scheme_primary'),
-    getVal('color_scheme_secondary'),
-    getVal('color_scheme_highlights') ? `highlights: ${getVal('color_scheme_highlights')}` : null
+    getVal('color_palette'),
+    getVal('color_grading'),
+    getVal('accent_color') ? `accent color: ${getVal('accent_color')}` : null
   ].filter(Boolean).join(', ');
 
   const surface = [
-    getVal('surface_texture'),
-    getVal('shadow_style'),
-    getVal('highlight_profile')
+    getVal('material_texture'),
+    getVal('detail_level'),
+    getVal('realism_level'),
+    getVal('surrealism_level')
   ].filter(Boolean).join(', ');
 
-  const linework = [
-    getVal('ink_weight'),
-    getVal('linework_density'),
-    getVal('Post-Processing')
+  const camera = [
+    getVal('shot_size'),
+    getVal('camera_angle'),
+    getVal('lens_focal_length'),
+    getVal('depth_of_field')
   ].filter(Boolean).join(', ');
 
-  const composition = getVal('Composition Aids');
+  const finish = [
+    getVal('mood_atmosphere'),
+    getVal('output_quality')
+  ].filter(Boolean).join(', ');
+
+  const composition = getSelectedValues('Composition Aids').join(', ');
+  const post = getSelectedValues('Post-Processing').join(', ');
+  const negative = getSelectedValues('Negative Constraints').join(', ');
   const seed = getVal('seed') || Math.floor(Math.random() * 10000);
   const aspect = getVal('aspect_ratio') || '1:1';
 
-  const prompt = [
+  return [
     base,
     baseDescriptors && `— ${baseDescriptors}`,
     environment && `— ${environment}`,
     artStyle && `— ${artStyle}`,
     lighting && `— ${lighting}`,
-    background && `— ${background}`,
     color && `— ${color}`,
     surface && `— ${surface}`,
-    linework && `— ${linework}`,
+    camera && `— ${camera}`,
+    finish && `— ${finish}`,
     composition && `— ${composition}`,
+    post && `— ${post}`,
+    negative && `--no ${negative}`,
     `--ar ${aspect}`,
     `--style raw`,
     `--seed ${seed}`,
     `--v 7`
   ].filter(Boolean).join(' ');
-
-  navigator.clipboard.writeText(prompt);
-  alert("📸 MidJourney prompt copied to clipboard!");
 }
 
-// Helper to safely fetch values
-function getVal(key) {
-  const el = document.getElementById(key);
-  return el && el.value ? el.value.trim() : null;
-}
-    
-function toggleDarkMode() {
-  document.body.classList.toggle('light-mode');
-  const label = document.querySelector('#darkModeToggle span');
-  label.textContent = document.body.classList.contains('light-mode') ? 'Dark Mode' : 'Light Mode';
-}
-   
-function copyAnalyzeThis() {
-  const instructionLine = "analyze this image and create a new JSON filling in the key values below\n\n";
+function buildBriefPrompt() {
+  const lines = [];
+  const preamble = buildPromptObject().preamble;
 
+  if (preamble) lines.push(preamble);
+
+  getPromptSections().forEach(section => lines.push(`${section.label}: ${section.text}`));
+  getCheckboxSections().forEach(section => lines.push(`${section.label}: ${section.text}`));
+
+  return lines.join('\n');
+}
+
+function buildOpenAIImagePrompt() {
+  const lines = [];
+  const preamble = getCleanPreamble();
+
+  lines.push('Create an image using this creative brief.');
+  if (preamble) lines.push(`Primary subject: ${preamble}`);
+
+  getPromptSections().forEach(section => lines.push(`${section.label}: ${section.text}`));
+  getCheckboxSections(false).forEach(section => lines.push(`${section.label}: ${section.text}`));
+
+  const negative = getSelectedValues('Negative Constraints');
+  if (negative.length) {
+    lines.push(`Avoid: ${negative.join(', ')}`);
+  }
+
+  const aspect = getVal('aspect_ratio');
+  if (aspect) lines.push(`Aspect ratio: ${aspect}`);
+
+  return lines.join('\n');
+}
+
+function buildSdxlPrompt() {
+  const positiveParts = [
+    getCleanPreamble(),
+    ...getPromptSections().map(section => section.text),
+    ...getCheckboxSections(false).map(section => section.text)
+  ].filter(Boolean);
+
+  const negative = getSelectedValues('Negative Constraints');
+  const seed = getVal('seed');
+  const aspect = getVal('aspect_ratio');
+
+  return [
+    `Positive prompt:\n${positiveParts.join(', ')}`,
+    negative.length ? `Negative prompt:\n${negative.join(', ')}` : null,
+    aspect ? `Aspect ratio: ${aspect}` : null,
+    seed ? `Seed: ${seed}` : null
+  ].filter(Boolean).join('\n\n');
+}
+
+function buildAnalyzeTemplate() {
+  const instructionLine = "Analyze this image and create a new JSON filling in the key values below.\n\n";
   const obj = {
-    preamble: "create a preamble for this JSON when you are analyzing it. Once written, wrap it like this: 'Use the following JSON parameters to generate an image of ${preamble}'"
+    preamble: "Create a preamble for this JSON. Once written, wrap it like this: 'Use the following JSON parameters to generate an image of ${preamble}'"
   };
 
   for (const key of Object.keys(dropdownOptions)) {
@@ -723,34 +1379,186 @@ function copyAnalyzeThis() {
     }
   }
 
-  const output = instructionLine + JSON.stringify(obj, null, 2);
-  navigator.clipboard.writeText(output);
+  return instructionLine + JSON.stringify(obj, null, 2);
+}
+
+function buildPreviewOutput(format) {
+  if (format === 'openai') return buildOpenAIImagePrompt();
+  if (format === 'midjourney') return buildMidjourneyPrompt();
+  if (format === 'sdxl') return buildSdxlPrompt();
+  if (format === 'brief') return buildBriefPrompt();
+  if (format === 'analyze') return buildAnalyzeTemplate();
+  return JSON.stringify(buildPromptObject(), null, 2);
+}
+
+function updatePreview() {
+  const preview = document.getElementById('livePreview');
+  if (!preview) return;
+
+  const format = document.getElementById('previewFormat')?.value || 'json';
+  preview.textContent = buildPreviewOutput(format);
+  updatePromptHealth();
+}
+
+function getPromptHealthWarnings() {
+  const warnings = [];
+  const preamble = getCleanPreamble();
+  const subjectType = getVal('subject_type');
+  const imageMedium = getVal('image_medium');
+  const renderStyle = getVal('render_style');
+  const realismLevel = getVal('realism_level');
+  const lightingQuality = getVal('lighting_quality');
+  const depthOfField = getVal('depth_of_field');
+  const shotSize = getVal('shot_size');
+  const colorPalette = getVal('color_palette');
+  const negative = getSelectedValues('Negative Constraints');
+  const selectedEffects = [
+    ...getSelectedValues('Lighting Effects'),
+    ...getSelectedValues('Lens & Camera Overlays'),
+    ...getSelectedValues('Post-Processing')
+  ];
+
+  if (!preamble) {
+    warnings.push('Add a preamble so the image has a clear core idea.');
+  }
+
+  if (!subjectType && !preamble) {
+    warnings.push('Choose a subject type or describe the subject in the preamble.');
+  }
+
+  if (imageMedium === 'vector art' && ['photorealistic', 'hyperrealistic'].includes(renderStyle)) {
+    warnings.push('Vector art and photorealistic render style may pull in opposite directions.');
+  }
+
+  if (renderStyle === 'flat graphic' && ['photorealistic', 'hyperrealistic'].includes(realismLevel)) {
+    warnings.push('Flat graphic style usually works better with symbolic or stylized realism.');
+  }
+
+  if (subjectType === 'logo or emblem' && negative.includes('logo')) {
+    warnings.push('Negative constraints include logo while the subject type is logo or emblem.');
+  }
+
+  if (subjectType === 'logo or emblem' && depthOfField && depthOfField !== 'flat 2D focus') {
+    warnings.push('Logo prompts usually work best with flat 2D focus.');
+  }
+
+  if (subjectType === 'logo or emblem' && !['vector art', 'screen print'].includes(imageMedium || '')) {
+    warnings.push('Logo mode tends to work best with vector art or screen print as the medium.');
+  }
+
+  if (lightingQuality === 'flat illustration lighting' && ['photograph', '3D render'].includes(imageMedium || '')) {
+    warnings.push('Flat illustration lighting may soften the photographic/3D look.');
+  }
+
+  if (shotSize === 'macro shot' && subjectType === 'landscape') {
+    warnings.push('Macro shot and landscape subject may conflict; consider establishing or wide shot.');
+  }
+
+  if (selectedEffects.length > 7) {
+    warnings.push('Many effects are selected; the prompt may become visually noisy.');
+  }
+
+  if (colorPalette === 'monochrome' && getVal('accent_color')) {
+    warnings.push('Monochrome palette plus accent color can work, but may need a clear preamble.');
+  }
+
+  return warnings;
+}
+
+function updatePromptHealth() {
+  const panel = document.getElementById('promptHealth');
+  if (!panel) return;
+
+  const warnings = getPromptHealthWarnings();
+  panel.innerHTML = '';
+
+  const title = document.createElement('div');
+  title.className = 'prompt-health-title';
+  title.textContent = warnings.length ? 'Prompt Health' : 'Prompt Health: Clear';
+  panel.appendChild(title);
+
+  if (!warnings.length) {
+    const ok = document.createElement('div');
+    ok.className = 'prompt-health-ok';
+    ok.textContent = 'No obvious conflicts.';
+    panel.appendChild(ok);
+    return;
+  }
+
+  const list = document.createElement('ul');
+  warnings.slice(0, 5).forEach(warning => {
+    const item = document.createElement('li');
+    item.textContent = warning;
+    list.appendChild(item);
+  });
+  panel.appendChild(list);
+}
+
+// Helper to safely fetch values
+function getVal(key) {
+  const value = getDropdownValue(key);
+  return !isEmptyChoice(value) ? String(value).trim() : null;
+}
+
+function getSelectedValues(category) {
+  return (selectedCheckboxes[category] || []).filter(value => !isEmptyChoice(value));
+}
+    
+function toggleDarkMode() {
+  document.body.classList.toggle('light-mode');
+  const label = document.querySelector('#darkModeToggle span');
+  label.textContent = document.body.classList.contains('light-mode') ? 'Dark Mode' : 'Light Mode';
+}
+   
+function copyAnalyzeThis() {
+  navigator.clipboard.writeText(buildPreviewOutput('analyze'));
   alert('Analyze THIS template copied to clipboard!');
 }
 
 
 function randomizeFields() {
   for (const key in dropdownOptions) {
+    if (isDropdownLocked(key)) continue;
+
     const el = document.getElementById(key);
     const opts = dropdownOptions[key];
-    if (el && opts.length) {
-      const random = opts[Math.floor(Math.random() * opts.length)];
-      el.value = random;
+    if (opts.length) {
+      const usableOptions = opts.filter(option => !isEmptyChoice(option));
+      const pool = usableOptions.length ? usableOptions : opts;
+      const random = pool[Math.floor(Math.random() * pool.length)];
+      selectedDropdowns[key] = random;
+      if (el) el.value = random;
     }
   }
 
   randomizedCheckboxes = {};
-  selectedCheckboxes = {};
+  const nextSelectedCheckboxes = {};
   for (const cat in checkboxCategories) {
-    const values = checkboxCategories[cat];
-    if (values.length) {
-      const chosen = values[Math.floor(Math.random() * values.length)];
-      randomizedCheckboxes[cat] = [chosen];
-      selectedCheckboxes[cat] = [chosen];
+    if (isCheckboxGroupLocked(cat)) {
+      const existingValues = selectedCheckboxes[cat] || [];
+      if (existingValues.length) {
+        nextSelectedCheckboxes[cat] = existingValues;
+      }
     }
   }
 
+  for (const cat in checkboxCategories) {
+    if (isCheckboxGroupLocked(cat)) continue;
+
+    const values = checkboxCategories[cat];
+    if (values.length) {
+      const usableValues = values.filter(value => !isEmptyChoice(value));
+      if (!usableValues.length) continue;
+      const chosen = usableValues[Math.floor(Math.random() * usableValues.length)];
+      randomizedCheckboxes[cat] = [chosen];
+      nextSelectedCheckboxes[cat] = [chosen];
+    }
+  }
+
+  selectedCheckboxes = nextSelectedCheckboxes;
+  localStorage.setItem('selectedDropdowns', JSON.stringify(selectedDropdowns));
   localStorage.setItem('selectedCheckboxes', JSON.stringify(selectedCheckboxes));
+  updatePreview();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 if (document.activeElement && typeof document.activeElement.blur === 'function') {
   document.activeElement.blur();
@@ -764,6 +1572,7 @@ function clearCheckboxes() {
   localStorage.setItem('selectedCheckboxes', JSON.stringify(selectedCheckboxes));
   const checkboxes = document.querySelectorAll('input[type="checkbox"]');
   checkboxes.forEach(cb => cb.checked = false);
+  updatePreview();
   alert('All checkboxes cleared.');
 }
 
@@ -780,6 +1589,8 @@ function newProfile() {
       select.selectedIndex = 0; // or select.value = ''; if empty is default
     }
   }
+  selectedDropdowns = {};
+  localStorage.setItem('selectedDropdowns', JSON.stringify(selectedDropdowns));
 
   // Reset checkboxes
   selectedCheckboxes = {};
@@ -796,6 +1607,7 @@ function newProfile() {
   // Optional: set temporary unsaved name
   currentProfileName = null;
   updateProfileLabel();    
+  updatePreview();
 
   alert("🆕 New profile created. Don’t forget to save!");
 }
@@ -996,7 +1808,7 @@ if (favoriteProfiles && Object.keys(favoriteProfiles).length > 0) {
 
 let selectedManageProfile = null;
 let selectedManageFolder = null;
-let favoriteProfiles = JSON.parse(localStorage.getItem('favoriteProfiles') || '{}');
+let favoriteProfiles = getStoredJson('favoriteProfiles', {});
 
 async function openManageProfileModal() {
   const modal = document.getElementById('manageProfileModal');
@@ -1167,7 +1979,6 @@ selectedLi.append(' ' + nameOnly);
 
 setTimeout(() => starWrapper.remove(), 800);
 
-      setTimeout(() => drift.remove(), 800);
     }
   }
 
@@ -1202,10 +2013,10 @@ function loadSelectedProfile() {
   const profile = parts.pop();
   const folder = parts.join('/');
 
-  loadProfile(profile, folder)
+  loadProfile(folder ? `${folder}/${profile}` : profile)
     .then(() => {
       console.log("✅ Loaded profile:", selectedManageProfile);
-      document.getElementById('manageProfileModal').style.display = 'none';
+      closeManageProfileModal();
     })
     .catch(err => {
       console.error("❌ Error loading profile:", err);
@@ -1293,7 +2104,8 @@ window.deleteSelectedProfile = deleteSelectedProfile;
 
 async function loadProfile(profileName, folderPath = '') {
   try {
-    const data = await window.electronAPI.loadProfile(profileName, folderPath);
+    const fullProfileName = folderPath ? `${folderPath}/${profileName}` : profileName;
+    const data = await window.electronAPI.loadProfile(fullProfileName);
 
     if (data.preamble) {
       let cleanPreamble = data.preamble.trim();
@@ -1305,11 +2117,24 @@ async function loadProfile(profileName, folderPath = '') {
     }
 
     // Handle dropdowns
-    const dropdowns = data.dropdownSelections || data;
+    const dropdowns = mapLegacyDropdownSelections(data.dropdownSelections || data);
+    let dropdownsChanged = false;
+    selectedDropdowns = {};
     for (const key in dropdownOptions) {
-      if (dropdowns[key] && document.getElementById(key)) {
-        document.getElementById(key).value = dropdowns[key];
+      if (!isEmptyChoice(dropdowns[key])) {
+        if (!dropdownOptions[key].includes(dropdowns[key])) {
+          dropdownOptions[key].push(dropdowns[key]);
+          dropdownsChanged = true;
+        }
+        ensureSelectOption(key, dropdowns[key]);
+        selectedDropdowns[key] = dropdowns[key];
+        const select = document.getElementById(key);
+        if (select) select.value = dropdowns[key];
       }
+    }
+
+    if (dropdownsChanged) {
+      await window.electronAPI.saveDropdowns(dropdownOptions);
     }
 
     // Handle checkboxes
@@ -1325,13 +2150,63 @@ async function loadProfile(profileName, folderPath = '') {
     }
 
     localStorage.setItem('selectedCheckboxes', JSON.stringify(selectedCheckboxes));
-    currentProfileName = profileName;
+    localStorage.setItem('selectedDropdowns', JSON.stringify(selectedDropdowns));
+    currentProfileName = fullProfileName;
     updateProfileLabel();  
+    updatePreview();
     alert(`Profile "${profileName}" loaded.`);
   } catch (err) {
     console.error('Failed to load profile:', err);
     alert('Could not load profile.');
   }
+}
+
+function ensureSelectOption(key, value) {
+  const select = document.getElementById(key);
+  if (!select || isEmptyChoice(value)) return;
+
+  const exists = Array.from(select.options).some(option => option.value === value);
+  if (!exists) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    select.appendChild(option);
+  }
+}
+
+function mapLegacyDropdownSelections(dropdowns) {
+  const mapped = { ...dropdowns };
+  const legacyMap = {
+    character_substrate_base: 'render_style',
+    character_substrate_coating: 'material_texture',
+    environmental_density: 'environment_density',
+    body_language: 'pose_body_language',
+    color_scheme_primary: 'color_palette',
+    color_scheme_secondary: 'accent_color',
+    color_scheme_highlights: 'accent_color',
+    color_scheme_rim_light: 'lighting_color',
+    background_color: 'background_setting',
+    background_texture: 'background_setting',
+    camera_type: 'lens_focal_length',
+    focal_length: 'lens_focal_length',
+    lighting_type: 'lighting_quality',
+    lighting_temperature: 'lighting_color',
+    lighting_intensity: 'lighting_contrast',
+    lighting_accent_colors: 'lighting_color',
+    level_of_detail: 'detail_level',
+    color_grading_style: 'color_grading',
+    surface_texture: 'material_texture',
+    surreal_element_ratio: 'surrealism_level',
+    image_medium: 'image_medium'
+  };
+
+  Object.entries(legacyMap).forEach(([oldKey, newKey]) => {
+    if (!isEmptyChoice(mapped[oldKey]) && isEmptyChoice(mapped[newKey])) {
+      mapped[newKey] = mapped[oldKey];
+    }
+  });
+
+  return mapped;
 }
 
 function openImportJsonDialog() {
@@ -1408,9 +2283,9 @@ if (!name) return;
   };
 
   for (const key in dropdownOptions) {
-    const el = document.getElementById(key);
-    if (el && el.value) {
-      profileData.dropdownSelections[key] = el.value;
+    const value = getDropdownValue(key);
+    if (!isEmptyChoice(value)) {
+      profileData.dropdownSelections[key] = value;
     }
   }
 
@@ -1532,18 +2407,14 @@ async function confirmImportJson() {
     }
 
     // ✅ Merge dropdown values
-for (const key in dropdownOptions) {
-  if (key in data && typeof data[key] === 'string' && data[key].trim()) {
-    const val = data[key].trim();
-    if (
-      val &&
-      val.toLowerCase() !== 'none' &&
-      !dropdownOptions[key].includes(val)
-    ) {
-      dropdownOptions[key].push(val);
+    for (const key in dropdownOptions) {
+      if (key in data && typeof data[key] === 'string' && data[key].trim()) {
+        const val = data[key].trim();
+        if (!isEmptyChoice(val) && !dropdownOptions[key].includes(val)) {
+          dropdownOptions[key] = normalizeOptionList([...dropdownOptions[key], val]);
+        }
+      }
     }
-  }
-}
 
 
     // ✅ Merge checkbox values
@@ -1557,8 +2428,8 @@ for (const key in dropdownOptions) {
             : [];
 
         values.forEach(v => {
-          if (v && !checkboxCategories[key].includes(v)) {
-            checkboxCategories[key].push(v);
+          if (!isEmptyChoice(v) && !checkboxCategories[key].includes(v)) {
+            checkboxCategories[key] = normalizeOptionList([...checkboxCategories[key], v]);
           }
         });
       }
@@ -1577,7 +2448,7 @@ for (const key in dropdownOptions) {
 
 
     for (const key in dropdownOptions) {
-      if (data[key]) profileData.dropdownSelections[key] = data[key];
+      if (!isEmptyChoice(data[key])) profileData.dropdownSelections[key] = data[key];
     }
 
     for (const key in checkboxCategories) {
@@ -1597,6 +2468,7 @@ for (const key in dropdownOptions) {
     renderFields();
     renderButtonBar();
     populateLoadProfileSubmenu();
+    updatePreview();
     closeImportJsonDialog();
 
     alert(`✅ Imported JSON and saved as profile "${profileName}"`);
@@ -1628,6 +2500,7 @@ function importDropdowns(event) {
       dropdownOptions = JSON.parse(e.target.result);
       localStorage.setItem('dropdownOptions', JSON.stringify(dropdownOptions));
       renderFields();
+      updatePreview();
     } catch (err) {
       alert('Invalid JSON format');
     }
@@ -1639,7 +2512,12 @@ window.openDialog = openDialog;
 window.addDropdownCategory = addDropdownCategory;
 window.addCheckboxGroup = addCheckboxGroup;
 window.copyJSON = copyJSON;
+window.copyPreview = copyPreview;
 window.randomizeFields = randomizeFields;
+window.applyPresetMode = applyPresetMode;
+window.clearFieldSearch = clearFieldSearch;
+window.setFieldTab = setFieldTab;
+window.unlockAllRandomizerLocks = unlockAllRandomizerLocks;
 window.clearCheckboxes = clearCheckboxes;
 window.importJsonAsProfile = importJsonAsProfile;
 window.confirmImportJson = confirmImportJson;

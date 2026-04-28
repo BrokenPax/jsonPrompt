@@ -17,6 +17,15 @@ body {
   background-size: 20px 20px;
 }
 
+h1 {
+  margin: 18px 0 10px;
+  line-height: 1.2;
+}
+
+#profileDisplay {
+  flex-shrink: 0;
+}
+
 .top-menu-bar {
   background-color: #2a2a2a;
   padding: 0 10px;
@@ -141,60 +150,316 @@ input:focus, select:focus, textarea:focus {
   background-color: #1e1e1e;
   color: #ffffff;
   border: 1px solid #555;
-  padding: 10px 16px 10px 10px; /* ✅ right padding increased */
-  margin-bottom: 20px; /* ✅ creates vertical space between textarea and dropdowns */    
+  padding: 12px 16px;
+  margin-bottom: 16px;
   font-size: 1rem;
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
   box-sizing: border-box;
-  height: 150px; /* or taller */
+  height: 130px;
+  min-height: 96px;
   resize: vertical;
+  flex-shrink: 0;
 }
 
 textarea {
   resize: vertical;
 }
 
-.field-row {
-  display: flex;
+.preset-bar {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 280px) auto;
   align-items: center;
-  gap: 8px;
-  margin-bottom: -5px;
+  gap: 10px;
+  margin: 0 0 10px;
+  flex-shrink: 0;
+}
+
+.preset-bar label {
+  color: #66ccff;
+  font-weight: bold;
   font-size: 0.85rem;
 }
 
-.field-row label {
+.preset-bar select {
+  height: 32px;
+  font-size: 0.85rem;
+}
+
+.preset-bar button {
+  height: 32px;
+  padding: 4px 12px;
+}
+
+.field-search {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  flex-shrink: 0;
+}
+
+.field-search label {
+  color: #66ccff;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.field-search input {
+  height: 32px;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+.field-search button {
+  height: 32px;
+  padding: 4px 12px;
+}
+
+.field-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #333;
+  flex-shrink: 0;
+}
+
+.field-tab {
+  height: 32px;
+  padding: 4px 12px;
+  color: #c8ffff;
+  border-color: #00ffff55;
+  background: #222;
+  flex: 0 1 auto;
+}
+
+.field-tab.active {
+  color: #101010;
+  background: #00ffff;
+  border-color: #00ffff;
+  box-shadow: 0 0 8px #00ffff44;
+}
+
+.app-workspace {
+  display: grid;
+  grid-template-columns: minmax(560px, 1fr) minmax(300px, 380px);
+  gap: 24px;
+  min-height: 0;
   flex: 1;
+  overflow: hidden;
+}
+
+.builder-pane,
+.preview-pane {
+  min-height: 0;
+}
+
+.builder-pane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.preview-pane {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #00ffff44;
+  background: rgba(20, 24, 24, 0.94);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 0 18px rgba(0, 255, 255, 0.04);
+  min-width: 0;
+}
+
+.preview-toolbar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid #00ffff33;
+  background: #252525;
+}
+
+.preview-toolbar label {
+  color: #66ccff;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.preview-toolbar select {
+  height: 32px;
+  font-size: 0.85rem;
+}
+
+.preview-toolbar button {
+  height: 32px;
+  padding: 4px 10px;
+}
+
+#livePreview {
+  flex: 1;
+  margin: 0;
+  padding: 14px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #e8ffff;
+}
+
+.prompt-health {
+  border-bottom: 1px solid #00ffff22;
+  padding: 10px 12px;
+  background: #191f1f;
+  max-height: 170px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.prompt-health-title {
+  color: #66ccff;
+  font-weight: bold;
+  font-size: 0.82rem;
+  margin-bottom: 6px;
+}
+
+.prompt-health-ok {
+  color: #99e6b3;
+  font-size: 0.78rem;
+}
+
+.prompt-health ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.prompt-health li {
+  color: #ffd27a;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.empty-search-results {
+  color: #aaaaaa;
+  border: 1px dashed #555;
+  border-radius: 6px;
+  padding: 14px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.empty-search-results.compact {
+  padding: 8px 12px;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0;
+  font-size: 0.85rem;
+  min-width: 0;
+}
+
+.field-row label {
+  flex: 0 0 clamp(145px, 22%, 220px);
   text-align: right;
-  white-space: nowrap;
+  white-space: normal;
   font-weight: bold;
   padding: 2px 4px;
-  line-height: 1;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .field-row select,
 .field-row input {
-  flex: 2;
+  flex: 1 1 240px;
+  min-width: 0;
   padding: 4px 6px;
   font-size: 0.85rem;
-  height: 30px; /* balanced height */
+  height: 32px;
   line-height: 1;
 }
 
 .field-row button {
-  font-size: 0.65rem;
-  height: 20px;
-  padding: 2px 6px;
+  flex: 0 0 auto;
+  font-size: 0.75rem;
+  height: 28px;
+  min-width: 32px;
+  padding: 2px 8px;
   line-height: 1;
 }
 
+.field-row.is-locked select {
+  border-color: #ffaa0088;
+  box-shadow: 0 0 0 1px #ffaa0022 inset;
+}
+
+.lock-toggle {
+  width: 32px;
+  min-width: 32px;
+  padding: 0;
+  text-align: center;
+}
+
 .controls,
-.button-bar {
-  margin-top: 20px;
+.button-bar,
+.utility-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 10px 12px;
   flex-shrink: 0;
+  align-items: center;
+  min-width: 0;
+}
+
+.button-bar {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #333;
+}
+
+.utility-buttons {
+  margin-top: 16px !important;
+  margin-bottom: 16px !important;
+  padding-top: 12px;
+  border-top: 1px solid #333;
+}
+
+.button-bar button,
+.utility-buttons button {
+  flex: 0 1 auto;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.button-lock-group {
+  display: inline-flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.button-lock-group > button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.button-lock-group > .lock-toggle {
+  border-left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.button-lock-group.is-locked > button {
+  border-color: #ffaa0088;
+  color: #ffd27a;
 }
 
 button {
@@ -211,16 +476,16 @@ button {
 
 button:hover {
   background-color: #00ffff22;
-  transform: scale(1.03);
   box-shadow: 0 0 6px #00ffff44;
 }
 
 .main-scrollable {
   overflow-y: auto;
-  max-height: calc(100vh - 300px); /* gives room for textarea and buttons */
-  padding-right: 12px;
+  flex: 1;
+  min-height: 0;
+  padding-right: 14px;
   padding-top: 10px;
-  padding-bottom: 10px;
+  padding-bottom: 14px;
 }
 
 /* 🌀 Universal Custom Scrollbars – All scrollable areas */
@@ -439,7 +704,6 @@ ul#dropdown-edit-list button:hover {
 
 .menu-item,
 .submenu li,
-.field-row label,
 .checkbox-group label,
 .profile-row span {
   white-space: nowrap !important;
@@ -629,8 +893,8 @@ ul#dropdown-edit-list button:hover {
 #mainFields {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 0px 10px; /* top/bottom spacing between textarea + buttons */
+  gap: 14px;
+  padding: 0 8px 0 0;
 }
 
 body.light-mode {
@@ -645,6 +909,73 @@ body.light-mode input[type="text"] {
   background-color: #f5f5f5;
   color: #000;
   border: 1px solid #ccc;
+}
+
+body.light-mode .preview-pane {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ccc;
+  box-shadow: none;
+}
+
+body.light-mode .preview-toolbar {
+  background: #f0f0f0;
+  border-bottom: 1px solid #ddd;
+}
+
+body.light-mode .preview-toolbar label {
+  color: #0066cc;
+}
+
+body.light-mode #livePreview {
+  color: #111111;
+}
+
+body.light-mode .field-tabs {
+  border-bottom: 1px solid #ddd;
+}
+
+body.light-mode .preset-bar label {
+  color: #0066cc;
+}
+
+body.light-mode .field-search label {
+  color: #0066cc;
+}
+
+body.light-mode .prompt-health {
+  background: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+}
+
+body.light-mode .prompt-health-title {
+  color: #0066cc;
+}
+
+body.light-mode .prompt-health-ok {
+  color: #237a3b;
+}
+
+body.light-mode .prompt-health li {
+  color: #8a5a00;
+}
+
+body.light-mode .empty-search-results {
+  color: #555;
+  border-color: #ccc;
+}
+
+body.light-mode .field-tab {
+  background: #f0f0f0;
+  color: #000;
+  border-color: #ccc;
+}
+
+body.light-mode .field-tab.active {
+  background: #0066cc;
+  border-color: #0066cc;
+  color: #fff;
+  box-shadow: none;
 }
 
 body.light-mode .top-menu-bar {
@@ -708,6 +1039,12 @@ body.light-mode .checkbox-item input[type="checkbox"] {
 
 body.light-mode .checkbox-item:hover {
   background-color: #f0f0f0;
+}
+
+body.light-mode .field-row.is-locked select,
+body.light-mode .button-lock-group.is-locked > button {
+  border-color: #cc8800;
+  color: #8a5a00;
 }
 
 /* 🌞 Light mode overrides for edit modals */
@@ -1021,6 +1358,58 @@ body.light-mode #manageProfileSearch {
   border: 1px solid #ccc;
 }
 
+@media (max-width: 960px) {
+  body {
+    overflow: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .app-workspace {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .builder-pane {
+    overflow: visible;
+  }
+
+  .main-scrollable {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .preview-pane {
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 1180px) {
+  body {
+    overflow: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .app-workspace {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .builder-pane {
+    overflow: visible;
+  }
+
+  .main-scrollable {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .preview-pane {
+    min-height: 360px;
+  }
+}
+
 /* ⭐️ FAVORITE SLIDE-IN: Sparkle Star appears from the left and nudges the text */
 @keyframes slideInStar {
   0% {
@@ -1064,8 +1453,3 @@ body.light-mode #manageProfileSearch {
   position: relative;
   z-index: 5;
 }
-
-
-
-
-
