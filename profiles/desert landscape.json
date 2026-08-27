@@ -1,0 +1,99 @@
+{
+  "preamble": "tranquil moonlit desert landscape",
+  "dropdownSelections": {
+    "aspect_ratio": "16:9",
+    "prompt_intent": "Create a cinematic nocturnal desert landscape emphasizing stillness, moonlight, stars, and natural silhouettes",
+    "subject_type": "desert landscape",
+    "subject_action": "resting silently beneath a bright full moon and dense star field",
+    "image_medium": "digital landscape photography",
+    "style": "cinematic desert nightscape",
+    "render_style": "photorealistic",
+    "artist_style": "high-detail atmospheric landscape photography",
+    "director_style": "wide establishing shot with quiet western sci-fi atmosphere",
+    "environment": "remote desert wilderness",
+    "background_setting": "dark mountain range beneath a starry night sky",
+    "environment_density": "sparse desert vegetation with open sky dominance",
+    "time_of_day": "night",
+    "season": "dry desert season",
+    "weather": "clear sky",
+    "shot_size": "wide landscape shot",
+    "camera_angle": "low-to-mid eye-level angle",
+    "composition": "large cactus silhouette on the left foreground, moon in the upper right, mountains across the horizon, open star field filling the frame",
+    "lens_focal_length": "wide-angle lens, approximately 24mm",
+    "depth_of_field": "deep focus",
+    "lighting_quality": "soft moonlit illumination",
+    "lighting_direction": "overhead and upper-right moonlight",
+    "lighting_contrast": "high contrast between dark silhouettes and glowing sky",
+    "lighting_color": "cool blue and silver moonlight",
+    "color_palette": "deep navy, teal blue, icy cyan, moonlit silver, black silhouettes",
+    "accent_color": "pale moon silver",
+    "color_grading": "cool cinematic blue grade with lifted star highlights",
+    "material_texture": "dry sandy desert floor, spiky cactus skin, scrub brush, rocky mountain silhouettes",
+    "detail_level": "high",
+    "realism_level": "photorealistic",
+    "surrealism_level": "slightly heightened realism through exaggerated clarity of stars and moon glow",
+    "mood_atmosphere": "peaceful, lonely, vast, mystical, nocturnal",
+    "output_quality": "high-resolution cinematic landscape"
+  },
+  "selectedCheckboxes": {
+    "Subject Details": [
+      "A tall branching desert cactus stands in silhouette in the left foreground",
+      "surrounded by yucca plants",
+      "low shrubs",
+      "and dry desert brush. The full moon hangs bright in the upper-right sky."
+    ],
+    "Environment Details": [
+      "A remote desert basin stretches toward a dark jagged mountain range. The sky is filled with hundreds of visible stars",
+      "with subtle atmospheric glow near the horizon."
+    ],
+    "Composition Aids": [
+      "Use strong left-right balance: cactus silhouette anchoring the left third",
+      "moon placed near the upper-right third",
+      "mountain horizon running horizontally through the lower third."
+    ],
+    "Lighting Effects": [
+      "Soft blue moonlight washes over the desert floor",
+      "creating faint highlights on shrubs and sand while keeping the cactus mostly black against the sky."
+    ],
+    "Atmosphere & Motion": [
+      "Still air",
+      "silent desert",
+      "no visible motion",
+      "calm celestial atmosphere"
+    ],
+    "Lens & Camera Overlays": [
+      "Clean wide-angle landscape framing",
+      "crisp horizon",
+      "subtle natural vignette",
+      "no artificial UI overlays"
+    ],
+    "Texture & Material Details": [
+      "Grainy desert sand",
+      "rough cactus surface",
+      "sharp yucca leaves",
+      "brittle scrub brush",
+      "distant rocky mountain texture softened by darkness"
+    ],
+    "Post-Processing": [
+      "Cool blue cinematic grading",
+      "enhanced star visibility",
+      "subtle contrast boost",
+      "gentle moon glow",
+      "minimal noise reduction to preserve night detail"
+    ],
+    "Negative Constraints": [
+      "no people",
+      "no animals",
+      "no buildings",
+      "no vehicles",
+      "no city lights",
+      "no clouds",
+      "no daylight",
+      "no text",
+      "no watermark",
+      "no cartoon style",
+      "no fantasy moons larger than natural scale",
+      "no overexposed sky"
+    ]
+  }
+}
